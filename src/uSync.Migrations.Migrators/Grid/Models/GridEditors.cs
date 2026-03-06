@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace uSync.Migrations.Migrators.Grid.Models;
+
+internal class GridEditor
+{
+    public string? Name { get; set; }
+    public string? NameTemplate { get; set; }
+    public string? Alias { get; set; }
+    public string? View { get; set; }
+    public string? Icon { get; set; }
+    public GridEditorConfig? Config { get; set; }
+}
+
+internal class GridEditorConfig
+{
+    public string? Style { get; set; }
+    public string? Markup { get; set; }
+}

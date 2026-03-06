@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Project Path="uSync.Migrations.Client/uSync.Migrations.Client.csproj" />
+  <Project Path="uSync.Migrations.Core/uSync.Migrations.Core.csproj" />
+  <Project Path="uSync.Migrations.Migrators/uSync.Migrations.Migrators.csproj" Id="a9cc2640-96e4-473d-8dfc-6b1a5e50bba9" />
+  <Project Path="uSync.Migrations.Site/uSync.Migrations.Site.csproj" />
+  <Project Path="uSync.Migrations/uSync.Migrations.csproj" />
+</Solution>

@@ -1,0 +1,41 @@
+<Project>
+	<PropertyGroup>
+		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+	</PropertyGroup>
+	<!-- umbraco site -->
+	<ItemGroup>
+		<PackageVersion Include="Umbraco.Cms" Version="17.2.1" />
+		<PackageVersion Include="Microsoft.ICU.ICU4C.Runtime" Version="72.1.0.3" />
+		<PackageVersion Include="Umbraco.Cms.DevelopmentMode.Backoffice" Version="17.1.0" />
+		<PackageVersion Include="Clean" Version="7.0.5" />
+	</ItemGroup>
+	<!-- umbraco libraries for packages -->
+	<ItemGroup>
+		<PackageVersion Include="Umbraco.Cms.Core" Version="17.2.1" />
+		<PackageVersion Include="Umbraco.Cms.Web.Website" Version="17.2.1" />
+		<PackageVersion Include="Umbraco.Cms.Api.Management" Version="17.2.1" />
+		<PackageVersion Include="Umbraco.Cms.Web.Common" Version="17.2.1"/>
+		<PackageVersion Include="Umbraco.Cms.Api.Common" Version="17.2.1"/>
+	</ItemGroup>
+
+	<!-- uSync -->
+	<ItemGroup>
+		<PackageVersion Include="uSync" Version="17.1.0-build.20260306.3" />
+		<PackageVersion Include="uSync.BackOffice" Version="17.1.0-build.20260306.3" />
+		<PackageVersion Include="uSync.Core" Version="17.1.0-build.20260306.3" />
+	</ItemGroup>
+	<!-- source link -->
+	<ItemGroup>
+		<PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.103" />
+	</ItemGroup>
+	<!-- testing -->
+	<ItemGroup>
+		<PackageVersion Include="Umbraco.Cms.Tests" Version="17.2.1" />
+		<PackageVersion Include="Umbraco.Cms.Tests.Integration" Version="17.2.1" />
+		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+		<PackageVersion Include="NUnit3TestAdapter" Version="5.2.0" />
+		<PackageVersion Include="coverlet.collector" Version="6.0.4" />
+	</ItemGroup>
+
+
+</Project>
