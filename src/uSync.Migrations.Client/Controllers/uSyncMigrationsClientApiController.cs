@@ -46,8 +46,8 @@ public class uSyncMigrationsClientApiController : uSyncMigrationsClientApiContro
         var result = await _upgradeService.UpgradeFolderAsync(legacyFolder, _upgradeService.LatestFolder);
         if (result)
         {
-            await _upgradeService.IgnoreLegacyFolderAsync(legacyFolder,
-                "This folder has been upgraded and will be ignored by uSync for upgrades.");
+            //await _upgradeService.IgnoreLegacyFolderAsync(legacyFolder,
+            //    "This folder has been upgraded and will be ignored by uSync for upgrades.");
             return Ok();
         }
 

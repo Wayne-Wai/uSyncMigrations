@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-using Umbraco.Cms.Web.Website.ViewEngines;
-
 using uSync.BackOffice.Configuration;
 using uSync.BackOffice.Services;
 
@@ -45,7 +43,7 @@ internal class SyncUpgradeService : ISyncUpgradeService
         // then we don't do the checks, because the install is custom. 
         if (HasDefaultFolderConfig() is false) return false;
 
-        for (int n = _majorVersion - 1; n > 8; n--)
+        for (int n = _majorVersion - 1; n >= 8; n--)
         {
             var legacyFolder = $"~/uSync/v{n}";
             if (_syncFileService.DirectoryExists(legacyFolder))
@@ -196,7 +194,7 @@ internal class SyncUpgradeService : ISyncUpgradeService
 
     private async Task SaveUpgradedFileAsync(string targetFolder, SyncUpgradeFile file)
     {
-        var targetPath = Path.Combine(targetFolder, file.Filename);
+        var targetPath = Path.Combine(targetFolder, file.Filename.TrimStart(Path.DirectorySeparatorChar));
         await _syncFileService.SaveXElementAsync(file.Node, targetPath);
     }
 

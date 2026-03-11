@@ -12,7 +12,7 @@ public class SwitcherConfigurationMigrator : SyncConfigurationMigratorBase, ICon
     public string[] Editors => ["Our.Umbraco.Switcher"];
     public override string? TargetEditor => Constants.PropertyEditors.Aliases.Boolean;
 
-    public override IDictionary<string, object> GetMigratedConfiguration(IDictionary<string, object> configuration)
+    public override IDictionary<string, object> GetMigratedConfiguration(string name, IDictionary<string, object> configuration)
     {
         return MigratePropertyNames(configuration, new Dictionary<string, string>
         {

@@ -12,7 +12,7 @@ internal class TextCountToTextboxConfigurationMigrator : SyncConfigurationMigrat
 
     public override string? TargetEditor => Constants.PropertyEditors.Aliases.TextBox;
 
-    public override IDictionary<string, object> GetMigratedConfiguration(IDictionary<string, object> configuration)
+    public override IDictionary<string, object> GetMigratedConfiguration(string name, IDictionary<string, object> configuration)
     {
         var config = new Dictionary<string, object>();
 

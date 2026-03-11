@@ -30,7 +30,7 @@ internal class NestedContentConfigurationMigrator : SyncConfigurationMigratorBas
     public string[] Editors => [SyncLegacyTypes.NestedContent, SyncLegacyTypes.OurNestedContent];
 
     public override string? TargetEditor => Constants.PropertyEditors.Aliases.BlockList;
-    public override IDictionary<string, object> GetMigratedConfiguration(IDictionary<string, object> configuration)
+    public override IDictionary<string, object> GetMigratedConfiguration(string name, IDictionary<string, object> configuration)
     {
         var config = new BlockListConfiguration();
 

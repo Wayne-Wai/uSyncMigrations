@@ -6,14 +6,14 @@ using Umbraco.Cms.Infrastructure.Manifest;
 
 using uSync.Migrations.Core;
 
-namespace uSync.Migrations.Client.Composers;
+namespace uSync.Migrations.Client.Startup;
 
-public class uSyncMigrationsComposer : IComposer
+public static class SyncMigrationsClientBuilderExtensions
 {
-    public void Compose(IUmbracoBuilder builder)
+    public static IUmbracoBuilder AddSyncMigrationsClient(this IUmbracoBuilder builder)
     {
-        builder.AdduSyncMigrations();
         builder.AddMigrationsClientApi();
         builder.Services.AddSingleton<IPackageManifestReader, uSyncMigrationsManifestReader>();
+        return builder;
     }
 }

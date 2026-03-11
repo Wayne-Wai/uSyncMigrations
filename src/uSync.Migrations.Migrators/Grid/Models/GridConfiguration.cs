@@ -19,14 +19,14 @@ internal class GridConfiguration
 
 internal class GridConfigurationItems
 {
-    public List<GridStyle>? Styles { get; set; }
-    public List<GridConfig>? Config { get; set; }
+    public List<GridConfigurationStyles>? Styles { get; set; }
+    public List<GridConfigurationConfig>? Config { get; set; }
     public int Columns { get; set; }
     public List<GridTemplate>? Templates { get; set; }
     public List<GridLayout>? Layouts { get; set; }
 }
 
-internal class GridStyle
+internal class GridConfigurationStyles
 {
     public string? Label { get; set; }
     public string? Description { get; set; }
@@ -35,17 +35,45 @@ internal class GridStyle
     public string? Modifier { get; set; }
 }
 
-internal class GridConfig
+public class GridConfigurationConfig
 {
     public string? Label { get; set; }
     public string? Description { get; set; }
     public string? Key { get; set; }
     public string? View { get; set; }
+    public string? Modifier { get; set; }
+    public Dictionary<string, string>? ApplyTo { get; set; }
+    public List<GridSettingsConfigurationItemPreValue>? PreValues { get; set; }
+
+    public bool AppliesTo(string alias)
+    {
+        var appliesToValue = GetAppliesToValue();
+        if (appliesToValue == SyncGridMigrations.ApplyTo.ApplyToAll) return true;
+        if (appliesToValue.Equals(alias, StringComparison.InvariantCultureIgnoreCase)) return true;
+        return false;
+    }
+
+    public string GetAppliesToValue()
+    {
+        if (ApplyTo is null) return SyncGridMigrations.ApplyTo.ApplyToAll;
+        if (ApplyTo.TryGetValue("row", out var row) && string.IsNullOrWhiteSpace(row) is false)
+            return row;
+        if (ApplyTo.TryGetValue("area", out var area) && string.IsNullOrWhiteSpace(area) is false)
+            return area;
+        return ApplyTo.FirstOrDefault().Value;
+    }
 }
+
+public class GridSettingsConfigurationItemPreValue
+{
+    public string? Label { get; set; }
+    public string? Value { get; set; }  
+}
+
 
 internal class GridTemplate
 {
-    public string? Name { get; set; }
+    public required string Name { get; set; }
     public List<GridTemplateSection>? Sections { get; set; }
 }
 
@@ -58,8 +86,8 @@ internal class GridTemplateSection
 
 internal class GridLayout
 {
+    public required string Name { get; set; }
     public string? Label { get; set; }
-    public string? Name { get; set; }
     public List<GridLayoutArea>? Areas { get; set; }
 }
 

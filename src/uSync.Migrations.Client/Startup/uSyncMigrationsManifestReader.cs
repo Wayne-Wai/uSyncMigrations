@@ -3,7 +3,7 @@
 using Umbraco.Cms.Core.Manifest;
 using Umbraco.Cms.Infrastructure.Manifest;
 
-namespace uSync.Migrations.Client.Composers;
+namespace uSync.Migrations.Client.Startup;
 
 internal class uSyncMigrationsManifestReader : IPackageManifestReader
 {
