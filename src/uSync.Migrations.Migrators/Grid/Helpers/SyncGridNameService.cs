@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using Umbraco.Cms.Core.Models;
-using Umbraco.Cms.Core.Strings;
+﻿using Umbraco.Cms.Core.Strings;
 using Umbraco.Extensions;
 
 namespace uSync.Migrations.Migrators.Grid.Helpers;
 
-internal class SyncGridNameHelper : ISyncGridNameHelper
+internal class SyncGridNameService : ISyncGridNameService
 {
     private readonly IShortStringHelper _shortStringHelper;
-    public SyncGridNameHelper(IShortStringHelper shortStringHelper)
+    public SyncGridNameService(IShortStringHelper shortStringHelper)
     {
         _shortStringHelper = shortStringHelper;
     }
@@ -36,7 +31,7 @@ internal class SyncGridNameHelper : ISyncGridNameHelper
         var newAlias = $"Grid_{prefix}_{alias}";
         if (string.IsNullOrWhiteSpace(label) is false)
         {
-            newAlias += $"-{label}";
+            newAlias += $"_{label}";
         }
         return newAlias.ToSafeAlias(_shortStringHelper);
     }

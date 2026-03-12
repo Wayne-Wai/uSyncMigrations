@@ -3,7 +3,7 @@
 using uSync.Migrations.Core.Upgrade;
 using uSync.Migrations.Migrators.Grid.Models;
 
-namespace uSync.Migrations.Migrators.Grid.Config.Settings;
+namespace uSync.Migrations.Migrators.Grid.Config.Properties;
 
 public abstract class GridSettingsViewMigratorBase
 {

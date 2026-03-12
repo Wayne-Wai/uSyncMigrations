@@ -5,7 +5,7 @@ using uSync.Core;
 using uSync.Core.Extensions;
 using uSync.Migrations.Core.Extensions;
 using uSync.Migrations.Core.Upgrade;
-using uSync.Migrations.Migrators.Grid.Config.Settings;
+using uSync.Migrations.Migrators.Grid.Config.Properties;
 using uSync.Migrations.Migrators.Grid.Helpers;
 using uSync.Migrations.Migrators.Grid.Models;
 
@@ -25,10 +25,10 @@ internal class GridEditorsConfigFileUpgrader : GridFileUpgraderBase, ISyncFileUp
 {
     public string ItemType => "grid.editors.config.js";
 
-    private readonly ISyncGridNameHelper _gridNameHelper;
+    private readonly ISyncGridNameService _gridNameHelper;
     private readonly GridSettingsViewMigratorCollection _settingsMigrators;
 
-    public GridEditorsConfigFileUpgrader(ISyncGridNameHelper gridNameHelper, GridSettingsViewMigratorCollection settingsMigrators, IDataTypeService dataTypeService)
+    public GridEditorsConfigFileUpgrader(ISyncGridNameService gridNameHelper, GridSettingsViewMigratorCollection settingsMigrators, IDataTypeService dataTypeService)
         : base(dataTypeService)
     {
         _gridNameHelper = gridNameHelper;
@@ -85,7 +85,7 @@ internal class GridEditorsConfigFileUpgrader : GridFileUpgraderBase, ISyncFileUp
                 Definition: definition,
                 PropertyType: propertyType);
 
-            var contentTypeAlias = _gridNameHelper.GetElementContentTypeAlias(editor.Name);
+            var contentTypeAlias = _gridNameHelper.GetElementContentTypeAlias(editor.Alias);
 
             // create the content type 'element' that will be used in the block grid to represent this editor.
             newContentTypes.Add(new SyncUpgradeFile

@@ -10,8 +10,17 @@ namespace uSync.Migrations.Migrators.Grid.Models;
 ///  these are the same as the models in the UI, which contain all the bits we might want to
 ///  set and change. 
 /// </remarks>
-internal class UmbBlockGridTypeModel : BlockGridConfiguration.BlockGridBlockConfiguration
+internal class UmbBlockGridTypeModel : IBlockConfiguration
 {
+    // Block Settings
+    public int? AreaGridColumns { get; set; }
+    public UmbBlockGridAreaType[] Areas { get; set; } = Array.Empty<UmbBlockGridAreaType>();
+    public Guid ContentElementTypeKey { get; set; }
+    public Guid? SettingsElementTypeKey { get; set; }
+    public bool AllowAtRoot { get; set; }
+    public bool AllowInAreas { get; set; }
+
+    // UI Settings
     public string? Label { get; set; }
     public string? EditorSize { get; set; }
     public bool? InlineEditing { get; set; }

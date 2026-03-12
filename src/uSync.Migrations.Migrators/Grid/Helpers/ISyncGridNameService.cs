@@ -1,6 +1,6 @@
 ﻿namespace uSync.Migrations.Migrators.Grid.Helpers;
 
-internal interface ISyncGridNameHelper
+internal interface ISyncGridNameService
 {
     string GetSettingsContentTypeAlias(string alias, string? label);
     string GetDataTypeAlias(string alias, string? label);

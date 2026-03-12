@@ -9,7 +9,7 @@ using uSync.Core;
 using uSync.Core.Extensions;
 using uSync.Migrations.Core.Extensions;
 using uSync.Migrations.Core.Upgrade;
-using uSync.Migrations.Migrators.Grid.Config.Settings;
+using uSync.Migrations.Migrators.Grid.Config.Properties;
 using uSync.Migrations.Migrators.Grid.Helpers;
 using uSync.Migrations.Migrators.Grid.Models;
 
@@ -34,9 +34,9 @@ namespace uSync.Migrations.Migrators.Grid.FileUpgraders;
 internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
 {
     private readonly GridSettingsViewMigratorCollection _settingsMigrators;
-    private readonly ISyncGridNameHelper _gridNameHelper;
+    private readonly ISyncGridNameService _gridNameHelper;
 
-    public GridElementFileUpgrader(GridSettingsViewMigratorCollection settingsMigrators, ISyncGridNameHelper gridNameHelper, IDataTypeService dataTypeService)
+    public GridElementFileUpgrader(GridSettingsViewMigratorCollection settingsMigrators, ISyncGridNameService gridNameHelper, IDataTypeService dataTypeService)
         : base(dataTypeService)
     { 
         _settingsMigrators = settingsMigrators;
@@ -86,7 +86,7 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
 
             yield return new SyncUpgradeFile
             {
-                Filename = Path.Combine(SyncGridMigrations.ContentTypeFolder, _gridNameHelper.MakeSafeConfig($"Grid.Template.{alias}")),
+                Filename = Path.Combine(SyncGridMigrations.ContentTypeFolder, _gridNameHelper.MakeSafeConfig($"Grid_Template_{alias}_{template.Name}")),
                 Node = SyncMigrationContentTypeHelper.CreateContentType(
                     name: $"{template.Name} - {alias}",
                     alias: contentTypeAlias,

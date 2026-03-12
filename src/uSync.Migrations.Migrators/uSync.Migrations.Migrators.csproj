@@ -9,9 +9,5 @@
 	<ItemGroup>
 		<ProjectReference Include="..\uSync.Migrations.Core\uSync.Migrations.Core.csproj" />
 	</ItemGroup>
-	
-	<ItemGroup>
-	  <Folder Include="Grid\Content\" />
-	</ItemGroup>
 
 </Project>
