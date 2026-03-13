@@ -12,4 +12,6 @@ internal interface ISyncGridNameService
     /// </summary>
     string GetElementContentTypeAlias(string alias);
     string MakeSafeConfig(string alias);
+    string MakeSafeSettingsKey(string alias);
+    Guid MakeAreaKey(string gridAlias, string alias, int index, int columns);
 }

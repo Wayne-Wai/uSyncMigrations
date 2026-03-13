@@ -81,7 +81,7 @@ internal class GridEditorsConfigFileUpgrader : GridFileUpgraderBase, ISyncFileUp
 
             var dataTypeInfo = new SyncDataTypeInfo(
                 Name: editor.Name,
-                Alias: dataTypeAlias,
+                Alias: editor.Alias,
                 Definition: definition,
                 PropertyType: propertyType);
 

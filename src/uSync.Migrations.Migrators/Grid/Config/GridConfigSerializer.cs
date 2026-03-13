@@ -1,5 +1,4 @@
 ﻿using Umbraco.Cms.Core;
-using Umbraco.Cms.Core.Services;
 using Umbraco.Extensions;
 
 using uSync.Core.DataTypes;
@@ -13,10 +12,12 @@ namespace uSync.Migrations.Migrators.Grid.Config;
 internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurationSerializer
 {
     private readonly ISyncGridContentTypeFinder _gridContentTypeFinder;
+    private readonly ISyncGridNameService _gridNameService;
 
-    public GridConfigSerializer(ISyncGridContentTypeFinder gridContentTypeFinder)
+    public GridConfigSerializer(ISyncGridContentTypeFinder gridContentTypeFinder, ISyncGridNameService gridNameService)
     {
         _gridContentTypeFinder = gridContentTypeFinder;
+        _gridNameService = gridNameService;
     }
 
     public override string? TargetEditor => Constants.PropertyEditors.Aliases.BlockGrid;
@@ -46,7 +47,7 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
         {
             ["gridColumns"] = data.Items?.Columns ?? SyncGridMigrations.DefaultGridColumns,
             ["blockGroups"] = data.GroupHelper.Groups,
-            ["blocks"] = blocks, // .DistinctBy(x => x.ContentElementTypeKey),
+            ["blocks"] = blocks.DistinctBy(x => x.ContentElementTypeKey),
         };
 
         return result;
@@ -91,7 +92,7 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
 
             foreach (var allowedItem in section.Allowed ?? [])
             {
-                var contentTypeKey = _gridContentTypeFinder.FindContentContentTypeKey(gridAlias, allowedItem);
+                var contentTypeKey = _gridContentTypeFinder.FindLayoutContentTypeKey(gridAlias, allowedItem);
                 if (contentTypeKey != null)
                 {
                     items.Add(new UmbBlockGridTypeModel
@@ -111,14 +112,14 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
     private UmbBlockGridAreaType[] GetAreasFromTemplateSections(string gridAlias, string templateName, List<GridTemplateSection> sections)
     {
         var areas = new List<UmbBlockGridAreaType>();
-        foreach (var section in sections)
+        foreach (var (section, index) in sections.Select((x, i) => (x, i)))
         {
             areas.Add(new UmbBlockGridAreaType
             {
                 Alias = section.Grid == SyncGridMigrations.DefaultGridColumns ? "FullWidth" : $"Column_{section.Grid}",
                 ColumnSpan = section.Grid,
                 RowSpan = 1,
-                Key = $"{templateName}_{section.Grid}".ToGuid(),
+                Key = _gridNameService.MakeAreaKey(gridAlias, templateName, index, section.Grid),
                 MinAllowed = 0,
                 SpecifiedAllowance = section.AllowAll ? null : GetSpecificAllowancesFromAllowedSections(gridAlias, section.Allowed)
             });
@@ -132,7 +133,7 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
 
         foreach (var allowedElement in gridAllowedList ?? [])
         {
-            var elementKey = _gridContentTypeFinder.FindContentContentTypeKey(gridAlias, allowedElement);
+            var elementKey = _gridContentTypeFinder.FindLayoutContentTypeKey(gridAlias, allowedElement);
             if (elementKey is null) continue;
 
             allowed.Add(new UmbBlockGridTypeAreaTypePermissions
@@ -154,11 +155,11 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
         var layoutGroupKey = data.GroupHelper.GetLayoutGroupKey();
         var elementGroupKey = data.GroupHelper.GetElementGroupKey();
 
-        foreach (var item in data.Items?.Layouts ?? [])
+        foreach (var (item, index) in data.Items.Layouts.Select((x, i) => (x, i)))
         {
             if (item.Areas is null) continue;
 
-            var contentKey = _gridContentTypeFinder.FindContentContentTypeKey(data.GridAlias, item.Name);
+            var contentKey = _gridContentTypeFinder.FindLayoutContentTypeKey(data.GridAlias, item.Name);
             if (contentKey is null) continue;
 
             var block = new UmbBlockGridTypeModel
@@ -167,7 +168,7 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
                 AllowInAreas = true,
                 ContentElementTypeKey = contentKey.Value,
                 Label = item.Label,
-                Areas = GetBlockAreasFromGrid(item.Name, item.Areas),
+                Areas = GetBlockAreasFromGrid(data.GridAlias, item.Name, item.Areas),
                 GroupKey = layoutGroupKey
             };
 
@@ -212,7 +213,7 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
         return items;
     }
 
-    private UmbBlockGridAreaType[] GetBlockAreasFromGrid(string itemName, List<GridLayoutArea> gridAreas)
+    private UmbBlockGridAreaType[] GetBlockAreasFromGrid(string gridAlias, string itemName, List<GridLayoutArea> gridAreas)
     {
         var areas = new List<UmbBlockGridAreaType>();
         foreach (var (area, index) in gridAreas.Select((x, i) => (x, i)))
@@ -222,7 +223,7 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
                 Alias = $"Area_{index + 1}",
                 ColumnSpan = area.Grid,
                 RowSpan = 1,
-                Key = $"{itemName}_Area_{index}".ToGuid(),
+                Key = _gridNameService.MakeAreaKey(gridAlias, itemName, index, area.Grid),
                 MinAllowed = 0,
             };
 
@@ -279,7 +280,6 @@ internal class SyncGridMigrationData
     public required string GridAlias { get; init; }
     public required GridConfigurationItems? Items { get; init; }
     public required List<GridConfigurationConfig> Config { get; init; }
-    public required List<GridConfigurationStyles> Styles { get; init; }
-   
+    public required List<GridConfigurationStyles> Styles { get; init; }   
     public required SyncGridGroupHelper GroupHelper { get; set; }
 }

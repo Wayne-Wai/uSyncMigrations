@@ -6,9 +6,14 @@ namespace uSync.Migrations.Migrators.Grid.Helpers;
 
 internal interface ISyncGridContentTypeFinder
 {
-    Guid? FindContentContentTypeKey(string gridAlias, string layout);
+    IContentType? FindLayoutContentType(string gridAlias, string layout);
+    Guid? FindLayoutContentTypeKey(string gridAlias, string? layout);
+    IContentType? FindContentType(string alias);
+    IContentType? FindElementContentType(string elementAlias);
     Guid? FindElementContentTypeKey(string elementAlias);
-    Guid? FindSettingsContentTypeKey(string gridAlias, string layout);
-    Guid FindTemplateContentTypeKey(string gridAlias, string templateAlias);
+    IContentType? FindSettingsContentType(string gridAlias, string? layout);
+    Guid? FindSettingsContentTypeKey(string gridAlias, string? layout);
+    IContentType? FindTemplateContentType(string gridAlias, string? templateAlias);
+    Guid FindTemplateContentTypeKey(string gridAlias, string? templateAlias);
     IEnumerable<IContentType> GetAllGridBlockContentTypes(Guid? groupKey);
 }

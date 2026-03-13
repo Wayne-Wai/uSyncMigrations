@@ -1,0 +1,88 @@
+{
+  "contentData": [
+    {
+      "contentTypeKey": "5f8b645e-3cc7-30ec-87c9-bcd5ebfcd591",
+      "key": "ac0ac70f-11cd-45eb-b100-197c93b6dece",
+      "values": []
+    },
+    {
+      "contentTypeKey": "35903eef-d884-33a2-9e1d-0a4a2dbf6fe7",
+      "key": "1209e26f-32f5-467a-bd45-44057f804c18",
+      "values": [
+        {
+          "alias": "rte",
+          "culture": null,
+          "editorAlias": null,
+          "segment": null,
+          "value": "\u003Cp\u003EHere\u0027s what could be improved in the Starter Kit so far:\u003C/p\u003E\n\u003Cp\u003E\u00A0\u003C/p\u003E\n\u003Cp\u003EFor v1:\u003C/p\u003E\n\u003Cul\u003E\n\u003Cli\u003EUse a custom grid editor for testimonials\u003C/li\u003E\n\u003Cli\u003EIntegrated Analytics on pages\u003C/li\u003E\n\u003Cli\u003ECall To Action Button in the grid (with\u00A0\u0022Tag Manager\u0022 integration)\u003C/li\u003E\n\u003Cli\u003EMacro for fetching products (with friendly grid preview)\u003C/li\u003E\n\u003Cli\u003EDesign Review (polish)\u003C/li\u003E\n\u003Cli\u003EVerify licenses of photos (Niels)\u003C/li\u003E\n\u003C/ul\u003E\n\u003Cp\u003EFor vNext\u003C/p\u003E\n\u003Cul\u003E\n\u003Cli\u003E\u003Cspan style=\u0022text-decoration: line-through;\u0022\u003ESwap text with uploaded logo\u003C/span\u003E\u003C/li\u003E\n\u003Cli\u003ENicer pickers of products and employees\u003C/li\u003E\n\u003Cli\u003ECustom Listview for products and employees\u003C/li\u003E\n\u003Cli\u003EDiscus template on blog posts\u003C/li\u003E\n\u003Cli\u003E404 template\u003C/li\u003E\n\u003Cli\u003EMember Login/Register/Profile/Forgot password\u003C/li\u003E\n\u003Cli\u003EUpdate default styling of grid header\u003C/li\u003E\n\u003Cli\u003EOn a Blog post -\u0026gt; Share/Social (tweet this / facebook this)\u003C/li\u003E\n\u003C/ul\u003E"
+        }
+      ]
+    },
+    {
+      "contentTypeKey": "2d887aaa-8c49-30cd-bd90-4d576925d5d8",
+      "key": "87559a7e-c310-429a-b444-96fd64bceb69",
+      "values": []
+    }
+  ],
+  "settingsData": [],
+  "expose": [
+    {
+      "contentKey": "ac0ac70f-11cd-45eb-b100-197c93b6dece",
+      "culture": null,
+      "segment": null
+    },
+    {
+      "contentKey": "1209e26f-32f5-467a-bd45-44057f804c18",
+      "culture": null,
+      "segment": null
+    },
+    {
+      "contentKey": "87559a7e-c310-429a-b444-96fd64bceb69",
+      "culture": null,
+      "segment": null
+    }
+  ],
+  "Layout": {
+    "Umbraco.BlockGrid": [
+      {
+        "areas": [
+          {
+            "items": [
+              {
+                "areas": [
+                  {
+                    "items": [
+                      {
+                        "areas": [],
+                        "columnSpan": 12,
+                        "contentKey": "1209e26f-32f5-467a-bd45-44057f804c18",
+                        "contentUdi": null,
+                        "rowSpan": 1,
+                        "settingsKey": null,
+                        "settingsUdi": null
+                      }
+                    ],
+                    "key": "9bf41857-075f-39a5-a8cd-16541c382cae"
+                  }
+                ],
+                "columnSpan": 12,
+                "contentKey": "87559a7e-c310-429a-b444-96fd64bceb69",
+                "contentUdi": null,
+                "rowSpan": 1,
+                "settingsKey": null,
+                "settingsUdi": null
+              }
+            ],
+            "key": "69006550-bcca-3067-8392-259cd7df6c92"
+          }
+        ],
+        "columnSpan": 12,
+        "contentKey": "ac0ac70f-11cd-45eb-b100-197c93b6dece",
+        "contentUdi": null,
+        "rowSpan": 1,
+        "settingsKey": null,
+        "settingsUdi": null
+      }
+    ]
+  }
+}

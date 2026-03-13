@@ -3,6 +3,7 @@
 using Umbraco.Cms.Core.DependencyInjection;
 
 using uSync.Migrations.Migrators.Grid.Config.Properties;
+using uSync.Migrations.Migrators.Grid.Content.BlockMigrators;
 using uSync.Migrations.Migrators.Grid.Helpers;
 
 namespace uSync.Migrations.Migrators;
@@ -17,6 +18,9 @@ public static class MigratorsBuilderExtensions
 
         builder.WithCollectionBuilder<GridSettingsViewMigratorCollectionBuilder>()
             .Add(() => builder.TypeLoader.GetTypes<IGridSettingsViewMigrator>());
+
+        builder.WithCollectionBuilder<SyncBlockMigratorCollectionBuilder>()
+            .Add(() => builder.TypeLoader.GetTypes<ISyncBlockMigrator>());
 
         return builder;
     }

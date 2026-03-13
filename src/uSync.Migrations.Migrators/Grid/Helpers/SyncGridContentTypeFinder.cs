@@ -26,17 +26,28 @@ internal class SyncGridContentTypeFinder : ISyncGridContentTypeFinder
         _gridNameHelper = gridNameHelper;
     }
 
-
-    public Guid FindTemplateContentTypeKey(string gridAlias, string templateAlias)
+    public IContentType? FindTemplateContentType(string gridAlias, string? templateAlias)
     {
         var contentTypeAlias = _gridNameHelper.GetTemplateContentTypeAlias(gridAlias, templateAlias);
-        var item = _contentTypeService.Get(contentTypeAlias);
+        return FindContentType(contentTypeAlias);
+    }
+
+    public Guid FindTemplateContentTypeKey(string gridAlias, string? templateAlias)
+    {
+        var contentTypeAlias = _gridNameHelper.GetTemplateContentTypeAlias(gridAlias, templateAlias);
+        var item = FindContentType(contentTypeAlias);
         if (item == null)
             return contentTypeAlias.ToGuid();
         return item.Key;
     }
 
-    public Guid? FindContentContentTypeKey(string gridAlias, string layout)
+    public IContentType? FindLayoutContentType(string gridAlias, string layout)
+    {
+        var contentTypeAlias = _gridNameHelper.GetLayoutContentTypeAlias(gridAlias, layout);
+        return FindContentType(contentTypeAlias);
+    }
+
+    public Guid? FindLayoutContentTypeKey(string gridAlias, string? layout)
     {
         var contentTypeAlias = _gridNameHelper.GetLayoutContentTypeAlias(gridAlias, layout);
         var item = _contentTypeService.Get(contentTypeAlias);
@@ -44,7 +55,15 @@ internal class SyncGridContentTypeFinder : ISyncGridContentTypeFinder
             return contentTypeAlias.ToGuid();
         return item.Key;
     }
-    public Guid? FindSettingsContentTypeKey(string gridAlias, string layout)
+
+
+    public IContentType? FindSettingsContentType(string gridAlias, string? layout)
+    {
+        var contentTypeAlias = _gridNameHelper.GetSettingsContentTypeAlias(gridAlias, layout);
+        return FindContentType(contentTypeAlias);
+    }
+
+    public Guid? FindSettingsContentTypeKey(string gridAlias, string? layout)
     {
         var contentTypeAlias = _gridNameHelper.GetSettingsContentTypeAlias(gridAlias, layout);
         var item = _contentTypeService.Get(contentTypeAlias);
@@ -52,6 +71,13 @@ internal class SyncGridContentTypeFinder : ISyncGridContentTypeFinder
             return contentTypeAlias.ToGuid();
         return item.Key;
     }
+
+    public IContentType? FindElementContentType(string elementAlias)
+    {
+        var contentTypeAlias = _gridNameHelper.GetElementContentTypeAlias(elementAlias);
+        return FindContentType(contentTypeAlias);
+    }
+
     public Guid? FindElementContentTypeKey(string elementAlias)
     {
         var contentTypeAlias = _gridNameHelper.GetElementContentTypeAlias(elementAlias);
@@ -60,6 +86,9 @@ internal class SyncGridContentTypeFinder : ISyncGridContentTypeFinder
             return contentTypeAlias.ToGuid();
         return item.Key;
     }
+
+    public IContentType? FindContentType(string alias)
+        => _contentTypeService.Get(alias);
 
     public IEnumerable<IContentType> GetAllGridBlockContentTypes(Guid? groupKey)
         => _contentTypeService.GetAll()

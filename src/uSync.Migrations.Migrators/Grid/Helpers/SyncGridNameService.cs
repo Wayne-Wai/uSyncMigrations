@@ -1,4 +1,6 @@
-﻿using Umbraco.Cms.Core.Strings;
+﻿using Org.BouncyCastle.Bcpg.OpenPgp;
+
+using Umbraco.Cms.Core.Strings;
 using Umbraco.Extensions;
 
 namespace uSync.Migrations.Migrators.Grid.Helpers;
@@ -38,4 +40,23 @@ internal class SyncGridNameService : ISyncGridNameService
 
     public string MakeSafeConfig(string alias)
         => $"{alias.ToSafeAlias(_shortStringHelper)}.config";
+
+    public string MakeSafeSettingsKey(string alias)
+    {
+        var splitString = alias.Split('-');
+        if (splitString.Length == 1)
+            return splitString[0];
+
+        return string.Join("",
+            splitString.First().ToLower(),
+            string.Join("", splitString.Skip(1).Select(x => x.ToFirstUpperInvariant())));
+    }
+
+    public Guid MakeAreaKey(string gridAlias, string alias, int index, int columns) { 
+
+        //var guid = $"{gridAlias}_{alias}_{index}_{columns}".ToGuid();
+        //File.AppendAllLines("D:\\Source\\Testing\\AreaKeys.txt", [$"{guid} :: {gridAlias}_{alias}_{index}_{columns}"]);
+
+        return $"{gridAlias}_{alias}_{index}_{columns}".ToGuid();
+    }
 }

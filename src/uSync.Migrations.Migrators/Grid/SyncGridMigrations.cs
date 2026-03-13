@@ -16,6 +16,8 @@ internal static class SyncGridMigrations
 
     public const int DefaultGridColumns = 12;
 
+    public const string DefaultMigratorType = "__default__";
+
     public static class ApplyTo {
         public const string ApplyToAll = "All";
         public const string ApplyToRow = "Rows";

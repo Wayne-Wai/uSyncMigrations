@@ -1,0 +1,102 @@
+{
+  "contentData": [
+    {
+      "contentTypeKey": "a61a5f7e-56c0-3a8b-98a0-ab1d64853e3e",
+      "key": "3d447373-c42d-4ddc-86da-f9473b22656d",
+      "values": []
+    },
+    {
+      "contentTypeKey": "70a3bfdb-e2bc-3227-954e-b6d42ffe1e39",
+      "key": "ac4c8a21-fddb-4074-91e3-41b2210e6a61",
+      "values": []
+    },
+    {
+      "contentTypeKey": "0ded000c-1d6c-31b5-b10a-3b5d1dafe522",
+      "key": "8e4217ea-a462-46f2-a9a5-db2fb8624067",
+      "values": [
+        {
+          "alias": "headline",
+          "culture": null,
+          "editorAlias": null,
+          "segment": null,
+          "value": "Headline"
+        }
+      ]
+    }
+  ],
+  "settingsData": [
+    {
+      "contentTypeKey": "67215a61-db6f-3783-906b-6213d1d38d19",
+      "key": "9aa98882-0357-4061-badc-f32a18d21e8e",
+      "values": [
+        {
+          "alias": "Truefalse",
+          "culture": null,
+          "editorAlias": null,
+          "segment": null,
+          "value": "0"
+        }
+      ]
+    }
+  ],
+  "expose": [
+    {
+      "contentKey": "3d447373-c42d-4ddc-86da-f9473b22656d",
+      "culture": null,
+      "segment": null
+    },
+    {
+      "contentKey": "ac4c8a21-fddb-4074-91e3-41b2210e6a61",
+      "culture": null,
+      "segment": null
+    },
+    {
+      "contentKey": "8e4217ea-a462-46f2-a9a5-db2fb8624067",
+      "culture": null,
+      "segment": null
+    }
+  ],
+  "Layout": {
+    "Umbraco.BlockGrid": [
+      {
+        "areas": [
+          {
+            "items": [
+              {
+                "areas": [
+                  {
+                    "items": [
+                      {
+                        "areas": [],
+                        "columnSpan": 12,
+                        "contentKey": "8e4217ea-a462-46f2-a9a5-db2fb8624067",
+                        "contentUdi": null,
+                        "rowSpan": 1,
+                        "settingsKey": null,
+                        "settingsUdi": null
+                      }
+                    ],
+                    "key": "9bf41857-075f-39a5-a8cd-16541c382cae"
+                  }
+                ],
+                "columnSpan": 12,
+                "contentKey": "ac4c8a21-fddb-4074-91e3-41b2210e6a61",
+                "contentUdi": null,
+                "rowSpan": 1,
+                "settingsKey": "9aa98882-0357-4061-badc-f32a18d21e8e",
+                "settingsUdi": null
+              }
+            ],
+            "key": "69006550-bcca-3067-8392-259cd7df6c92"
+          }
+        ],
+        "columnSpan": 12,
+        "contentKey": "3d447373-c42d-4ddc-86da-f9473b22656d",
+        "contentUdi": null,
+        "rowSpan": 1,
+        "settingsKey": null,
+        "settingsUdi": null
+      }
+    ]
+  }
+}
