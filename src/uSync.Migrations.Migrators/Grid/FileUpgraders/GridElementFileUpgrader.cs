@@ -152,8 +152,8 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
                         Name: $"{config.Label}",
                         Alias: dataTypeAlias,
                         Definition: dataType?.Key ?? dataTypeAlias.ToGuid(),
-                        PropertyType: dataType?.EditorAlias ?? Constants.PropertyEditors.Aliases.Label));
-
+                        PropertyType: dataType?.EditorAlias ?? Constants.PropertyEditors.Aliases.Label,
+                        propertyAlias: $"{config.Key ?? config.Label}"));
 
                     continue;
                 }
@@ -168,7 +168,8 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
                     Name: $"{config.Label}",
                     Alias: dataTypeAlias,
                     Definition: node.GetKey(),
-                    PropertyType: dataTypeAlias
+                    PropertyType: dataTypeAlias,
+                    propertyAlias: $"{config.Key ?? config.Label}"
                 ));
             }
 

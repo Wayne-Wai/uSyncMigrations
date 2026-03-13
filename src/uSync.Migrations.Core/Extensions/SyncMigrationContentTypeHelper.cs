@@ -4,7 +4,7 @@ using Umbraco.Extensions;
 
 namespace uSync.Migrations.Core.Extensions;
 
-public record SyncDataTypeInfo(string Name, string Alias, Guid Definition, string PropertyType);
+public record SyncDataTypeInfo(string Name, string Alias, Guid Definition, string PropertyType, string propertyAlias);
 
 public static class SyncMigrationContentTypeHelper
 {
@@ -47,7 +47,7 @@ public static class SyncMigrationContentTypeHelper
                 new XElement("GenericProperty",
                     new XElement("Key", $"{alias}{dataType.Alias}".ToGuid()),
                     new XElement("Name", dataType.Name),
-                    new XElement("Alias", dataType.Alias),
+                    new XElement("Alias", dataType.propertyAlias),
                     new XElement("Definition", dataType.Definition),
                     new XElement("Type", dataType.PropertyType),
                     new XElement("Mandatory", "false"),

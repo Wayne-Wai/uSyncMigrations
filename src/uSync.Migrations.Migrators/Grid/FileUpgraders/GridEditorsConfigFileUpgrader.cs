@@ -83,7 +83,8 @@ internal class GridEditorsConfigFileUpgrader : GridFileUpgraderBase, ISyncFileUp
                 Name: editor.Name,
                 Alias: editor.Alias,
                 Definition: definition,
-                PropertyType: propertyType);
+                PropertyType: propertyType,
+                propertyAlias: editor.Alias);
 
             var contentTypeAlias = _gridNameHelper.GetElementContentTypeAlias(editor.Alias);
 
