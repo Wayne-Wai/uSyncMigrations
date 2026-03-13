@@ -93,6 +93,7 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
                     folder: SyncGridMigrations.LayoutContainerName,
                     icon: "icon-layout color-green",
                     description: "Migrated: Grid Template",
+                    compositions: [],
                     dataTypes: [])
             };
         }
@@ -119,6 +120,7 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
                     folder: SyncGridMigrations.LayoutContainerName,
                     icon: "icon-layout color-blue",
                     description: "Migrated : Grid Layout ",
+                    compositions: [],
                     dataTypes: [])
             };            
         }
@@ -129,10 +131,14 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
     /// </summary>
     private IEnumerable<SyncUpgradeFile> CreateSettingsElements(string gridAlias, GridConfiguration gridConfiguration)
     {
-        var groups = gridConfiguration.Items?.Config?.GroupBy(x => x.GetAppliesToValue());
+        List<GridConfigurationConfig> configAndStyles = [.. gridConfiguration.Items?.Config ?? [], .. gridConfiguration.Items?.Styles ?? []];
+
+        var groups = configAndStyles.GroupBy(x => x.GetAppliesToValue());
         if (groups is null) return [];
 
         List<SyncUpgradeFile> results = [];
+
+        var configGroupHasAppliesToAll = groups.Any(x => x.Key == SyncGridMigrations.ApplyTo.ApplyToAll);
 
         foreach (var configGroup in groups)
         {
@@ -153,7 +159,7 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
                         Alias: dataTypeAlias,
                         Definition: dataType?.Key ?? dataTypeAlias.ToGuid(),
                         PropertyType: dataType?.EditorAlias ?? Constants.PropertyEditors.Aliases.Label,
-                        propertyAlias: $"{config.Key ?? config.Label}"));
+                        PropertyAlias: $"{config.Key ?? config.Label}"));
 
                     continue;
                 }
@@ -169,12 +175,16 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
                     Alias: dataTypeAlias,
                     Definition: node.GetKey(),
                     PropertyType: dataTypeAlias,
-                    propertyAlias: $"{config.Key ?? config.Label}"
+                    PropertyAlias: $"{config.Key ?? config.Label}"
                 ));
             }
 
-            var contentTypeAlias = _gridNameHelper.GetSettingsContentTypeAlias(gridAlias, configGroup.Key);
 
+            // TODO: This works for 'All' but we need to also compose for row and area settings ? 
+            var compositions =
+                configGroupHasAppliesToAll ? GetCompositions(gridAlias, configGroup.Key) : [];
+
+            var contentTypeAlias = _gridNameHelper.GetSettingsContentTypeAlias(gridAlias, configGroup.Key);
             results.Add(new SyncUpgradeFile
             {
                 Filename = Path.Combine(SyncGridMigrations.ContentTypeFolder, _gridNameHelper.MakeSafeConfig($"Grid_Settings_{gridAlias}_{configGroup.Key}")),
@@ -184,11 +194,25 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
                     folder: SyncGridMigrations.SettingsContainerName,
                     icon: "icon-settings color-orange",
                     description: $"Migrated : Grid Settings from {gridAlias}",
+                    compositions: [.. compositions],
                     dataTypes: [.. dataTypes])
             });
         }
 
         return results;
+    }
+
+    private IEnumerable<SyncCompositionInfo> GetCompositions(string gridAlias, string appliesTo)
+    {
+        // allies to all doesn't have any compositions
+        if (appliesTo == SyncGridMigrations.ApplyTo.ApplyToAll) return [];
+
+        // this is the short cut, we can guess what it will be called. 
+        // this method shouldn't be called unless there is an applied to all for the config, so 
+        // we can be 'certain' ish , that it exists. 
+        
+        var appliesToAllAlias = _gridNameHelper.GetSettingsContentTypeAlias(gridAlias, SyncGridMigrations.ApplyTo.ApplyToAll);
+        return [new SyncCompositionInfo(appliesToAllAlias.ToGuid(), appliesToAllAlias)];
     }
 
 

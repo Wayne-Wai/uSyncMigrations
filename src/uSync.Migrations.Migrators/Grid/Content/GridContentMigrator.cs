@@ -249,7 +249,12 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
 
         if (gridBlock.HasStyles())
         {
-
+            foreach(var style in gridBlock.Styles)
+            {
+                var value = await GetBlockPropertyValue(contentType, style.Key, style.Value?.ToString());
+                if (value is null) continue;
+                settingsBlock.Values.Add(value);
+            }
         }
 
         return settingsBlock;

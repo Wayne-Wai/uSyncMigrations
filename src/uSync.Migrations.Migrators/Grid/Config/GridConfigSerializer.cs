@@ -34,8 +34,7 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
         {
             GridAlias = name,
             Items = gridConfig.Items,
-            Config = gridConfig.Items?.Config ?? [],
-            Styles = gridConfig.Items?.Styles ?? [],
+            Config = [..gridConfig.Items?.Config ?? [], ..gridConfig.Items?.Styles ?? []],
             GroupHelper = new SyncGridGroupHelper(configuration.GetHashCode())
         };
 
@@ -280,6 +279,5 @@ internal class SyncGridMigrationData
     public required string GridAlias { get; init; }
     public required GridConfigurationItems? Items { get; init; }
     public required List<GridConfigurationConfig> Config { get; init; }
-    public required List<GridConfigurationStyles> Styles { get; init; }   
     public required SyncGridGroupHelper GroupHelper { get; set; }
 }

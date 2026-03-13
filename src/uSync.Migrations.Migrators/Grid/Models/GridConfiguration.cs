@@ -19,23 +19,14 @@ internal class GridConfiguration
 
 internal class GridConfigurationItems
 {
-    public List<GridConfigurationStyles>? Styles { get; set; }
+    public List<GridConfigurationConfig>? Styles { get; set; }
     public List<GridConfigurationConfig>? Config { get; set; }
     public int Columns { get; set; }
     public List<GridTemplate>? Templates { get; set; }
     public List<GridLayout>? Layouts { get; set; }
 }
 
-internal class GridConfigurationStyles
-{
-    public string? Label { get; set; }
-    public string? Description { get; set; }
-    public string? Key { get; set; }
-    public string? View { get; set; }
-    public string? Modifier { get; set; }
-}
-
-public class GridConfigurationConfig
+public class GridConfigurationConfig 
 {
     public string? Label { get; set; }
     public string? Description { get; set; }

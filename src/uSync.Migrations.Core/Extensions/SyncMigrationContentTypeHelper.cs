@@ -4,11 +4,14 @@ using Umbraco.Extensions;
 
 namespace uSync.Migrations.Core.Extensions;
 
-public record SyncDataTypeInfo(string Name, string Alias, Guid Definition, string PropertyType, string propertyAlias);
+public record SyncDataTypeInfo(string Name, string Alias, Guid Definition, string PropertyType, string PropertyAlias);
+public record SyncCompositionInfo(Guid Key, string Alias);
 
 public static class SyncMigrationContentTypeHelper
 {
-    public static XElement CreateContentType(string name, string alias, string folder, string icon, string description, SyncDataTypeInfo[] dataTypes) 
+    public static XElement CreateContentType(string name, string alias, string folder, string icon, string description, 
+        SyncCompositionInfo[] compositions,
+        SyncDataTypeInfo[] dataTypes) 
     {
         var node = new XElement("ContentType",
             new XAttribute("Key", alias.ToGuid()),
@@ -29,7 +32,7 @@ public static class SyncMigrationContentTypeHelper
                     new XElement("KeepLatestVersionPerDayForDays", string.Empty)
                 ),
                 new XElement("Folder", folder),
-                new XElement("Compositions"),
+                GetCompositions(compositions),
                 new XElement("DefaultTemplate", string.Empty),
                 new XElement("AllowedTemplates")
             ),
@@ -47,7 +50,7 @@ public static class SyncMigrationContentTypeHelper
                 new XElement("GenericProperty",
                     new XElement("Key", $"{alias}{dataType.Alias}".ToGuid()),
                     new XElement("Name", dataType.Name),
-                    new XElement("Alias", dataType.propertyAlias),
+                    new XElement("Alias", dataType.PropertyAlias),
                     new XElement("Definition", dataType.Definition),
                     new XElement("Type", dataType.PropertyType),
                     new XElement("Mandatory", "false"),
@@ -75,6 +78,20 @@ public static class SyncMigrationContentTypeHelper
             )
         ));
 
+        return node;
+    }
+
+    private static XElement? GetCompositions(SyncCompositionInfo[] compositions)
+    {
+        var node = new XElement("Compositions");
+        if (compositions.Length == 0) return node;
+
+        foreach (var composition in compositions)
+        {
+            node.Add(new XElement("Composition",
+                new XAttribute("Key", composition.Key),
+                new XAttribute("Alias", composition.Alias)));
+        }
         return node;
     }
 }

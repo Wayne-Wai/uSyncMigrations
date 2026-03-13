@@ -84,7 +84,7 @@ internal class GridEditorsConfigFileUpgrader : GridFileUpgraderBase, ISyncFileUp
                 Alias: editor.Alias,
                 Definition: definition,
                 PropertyType: propertyType,
-                propertyAlias: editor.Alias);
+                PropertyAlias: editor.Alias);
 
             var contentTypeAlias = _gridNameHelper.GetElementContentTypeAlias(editor.Alias);
 
@@ -98,6 +98,7 @@ internal class GridEditorsConfigFileUpgrader : GridFileUpgraderBase, ISyncFileUp
                             folder: SyncGridMigrations.ElementContainerName,
                             icon: editor.Icon ?? "icon-bug",
                             description: "Migrated from grid config",
+                            compositions: [],
                             dataTypes: [dataTypeInfo])
             });
         }
