@@ -2,7 +2,7 @@
 
 using Umbraco.Cms.Core.DependencyInjection;
 
-using uSync.Migrations.Migrators.Grid.Config.Properties;
+using uSync.Migrations.Migrators.Grid.Config.Migrators;
 using uSync.Migrations.Migrators.Grid.Content.BlockMigrators;
 using uSync.Migrations.Migrators.Grid.Helpers;
 

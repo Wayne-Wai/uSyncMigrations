@@ -67,8 +67,10 @@ internal class SyncGridContentTypeFinder : ISyncGridContentTypeFinder
     {
         var contentTypeAlias = _gridNameHelper.GetSettingsContentTypeAlias(gridAlias, layout);
         var item = _contentTypeService.Get(contentTypeAlias);
-        if (item == null)
-            return contentTypeAlias.ToGuid();
+        if (item == null) { 
+            // if there isn't one just for this type, check to see if there is one for apply all.
+            return FindSettingsContentTypeKey(gridAlias, SyncGridMigrations.ApplyTo.ApplyToAll);
+        }
         return item.Key;
     }
 

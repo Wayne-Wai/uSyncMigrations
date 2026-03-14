@@ -14,7 +14,7 @@ internal class UmbBlockGridTypeModel : IBlockConfiguration
 {
     // Block Settings
     public int? AreaGridColumns { get; set; }
-    public UmbBlockGridAreaType[] Areas { get; set; } = Array.Empty<UmbBlockGridAreaType>();
+    public UmbBlockGridAreaType[] Areas { get; set; } = [];
     public Guid ContentElementTypeKey { get; set; }
     public Guid? SettingsElementTypeKey { get; set; }
     public bool AllowAtRoot { get; set; }

@@ -1,6 +1,6 @@
 ﻿using Umbraco.Cms.Core;
 
-namespace uSync.Migrations.Migrators.Grid.Config.Properties;
+namespace uSync.Migrations.Migrators.Grid.Config.Migrators;
 
 public class GridViewPropertyNumberMigrator : GridSettingsViewMigratorBase, IGridSettingsViewMigrator
 {

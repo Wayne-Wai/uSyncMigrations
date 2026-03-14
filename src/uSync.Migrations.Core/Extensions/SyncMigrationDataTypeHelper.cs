@@ -19,7 +19,7 @@ public static class SyncMigrationDataTypeHelper
             new XElement("Info",
                 new XElement("Name", name),
                 new XElement("EditorAlias", propertyType),
-                new XElement("Folder", "Grid+Editors")),
+                new XElement("Folder", folder)),
             new XElement("Config", new XCData(configuration))
         );
     }

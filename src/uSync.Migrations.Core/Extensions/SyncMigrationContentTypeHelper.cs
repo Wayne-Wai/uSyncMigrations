@@ -9,12 +9,17 @@ public record SyncCompositionInfo(Guid Key, string Alias);
 
 public static class SyncMigrationContentTypeHelper
 {
-    public static XElement CreateContentType(string name, string alias, string folder, string icon, string description, 
+    public static XElement CreateContentType(string name, string alias, string folder, string icon, string description,
         SyncCompositionInfo[] compositions,
-        SyncDataTypeInfo[] dataTypes) 
+        SyncDataTypeInfo[] dataTypes)
+        => CreateContentType(name, alias.ToGuid(), alias, folder, icon, description, compositions, dataTypes);
+
+    public static XElement CreateContentType(string name, Guid key, string alias, string folder, string icon, string description,
+        SyncCompositionInfo[] compositions,
+        SyncDataTypeInfo[] dataTypes)
     {
         var node = new XElement("ContentType",
-            new XAttribute("Key", alias.ToGuid()),
+            new XAttribute("Key", key),
             new XAttribute("Alias", alias),
             new XAttribute("Level", 2),
             new XElement("Info",

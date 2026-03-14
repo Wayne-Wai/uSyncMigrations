@@ -59,7 +59,6 @@ public class GridValue
     public class GridEditor
     {
         public string Alias { get; set; } = null!;
-
         public string? View { get; set; }
     }
 }

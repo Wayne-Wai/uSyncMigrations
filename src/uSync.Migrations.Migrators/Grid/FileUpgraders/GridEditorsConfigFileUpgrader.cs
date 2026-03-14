@@ -5,7 +5,7 @@ using uSync.Core;
 using uSync.Core.Extensions;
 using uSync.Migrations.Core.Extensions;
 using uSync.Migrations.Core.Upgrade;
-using uSync.Migrations.Migrators.Grid.Config.Properties;
+using uSync.Migrations.Migrators.Grid.Config.Migrators;
 using uSync.Migrations.Migrators.Grid.Helpers;
 using uSync.Migrations.Migrators.Grid.Models;
 

@@ -7,7 +7,7 @@ using uSync.Core.Extensions;
 using uSync.Migrations.Core.Extensions;
 using uSync.Migrations.Migrators.Grid.Models;
 
-namespace uSync.Migrations.Migrators.Grid.Config.Properties;
+namespace uSync.Migrations.Migrators.Grid.Config.Migrators;
 
 public class GridViewPropertyRadioButtonListMigrator : GridSettingsViewMigratorBase, IGridSettingsViewMigrator
 {

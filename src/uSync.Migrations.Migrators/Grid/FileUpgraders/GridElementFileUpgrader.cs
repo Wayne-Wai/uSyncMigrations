@@ -9,7 +9,7 @@ using uSync.Core;
 using uSync.Core.Extensions;
 using uSync.Migrations.Core.Extensions;
 using uSync.Migrations.Core.Upgrade;
-using uSync.Migrations.Migrators.Grid.Config.Properties;
+using uSync.Migrations.Migrators.Grid.Config.Migrators;
 using uSync.Migrations.Migrators.Grid.Helpers;
 using uSync.Migrations.Migrators.Grid.Models;
 
@@ -78,6 +78,8 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
     /// </remarks>
     private IEnumerable<SyncUpgradeFile> CreateTemplateElements(string alias, GridConfiguration gridConfiguration)
     {
+        // Todo: flatten - if there is only one template, can we remove it ? 
+
         foreach(var template in gridConfiguration.Items?.Templates ?? [])
         {
             if (template.Sections is null) continue;
@@ -185,6 +187,7 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
                 configGroupHasAppliesToAll ? GetCompositions(gridAlias, configGroup.Key) : [];
 
             var contentTypeAlias = _gridNameHelper.GetSettingsContentTypeAlias(gridAlias, configGroup.Key);
+
             results.Add(new SyncUpgradeFile
             {
                 Filename = Path.Combine(SyncGridMigrations.ContentTypeFolder, _gridNameHelper.MakeSafeConfig($"Grid_Settings_{gridAlias}_{configGroup.Key}")),
@@ -204,16 +207,10 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
 
     private IEnumerable<SyncCompositionInfo> GetCompositions(string gridAlias, string appliesTo)
     {
-        // allies to all doesn't have any compositions
+        // applies to all doesn't have any compositions
         if (appliesTo == SyncGridMigrations.ApplyTo.ApplyToAll) return [];
-
-        // this is the short cut, we can guess what it will be called. 
-        // this method shouldn't be called unless there is an applied to all for the config, so 
-        // we can be 'certain' ish , that it exists. 
         
         var appliesToAllAlias = _gridNameHelper.GetSettingsContentTypeAlias(gridAlias, SyncGridMigrations.ApplyTo.ApplyToAll);
         return [new SyncCompositionInfo(appliesToAllAlias.ToGuid(), appliesToAllAlias)];
     }
-
-
 }

@@ -1,6 +1,5 @@
 ﻿using Umbraco.Cms.Core.Models.Blocks;
 
-using uSync.Migrations.Migrators.Grid.Extensions;
 using uSync.Migrations.Migrators.Grid.Models;
 
 namespace uSync.Migrations.Migrators.Grid.Content;

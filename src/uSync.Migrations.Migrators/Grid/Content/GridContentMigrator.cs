@@ -308,10 +308,10 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
     ///// <param name="grid"></param>
     private void FixDtgeViews(GridValue grid)
     {
-    //    foreach (var control in grid.Sections.SelectMany(s => s.Rows).SelectMany(r => r.Areas).SelectMany(a => a.Controls)
-    //        .Where(c => c.Editor.View is null && c.Value is JsonObject o && o.ContainsKey("dtgeContentTypeAlias")))
-    //    {
-    //        control.Editor.View = "/App_Plugins/DocTypeGridEditor/Views/doctypegrideditor.html";
-    //    }
+        foreach (var control in grid.Sections.SelectMany(s => s.Rows).SelectMany(r => r.Areas).SelectMany(a => a.Controls)
+            .Where(c => c.Editor.View is null && c.Value is JsonObject o && o.ContainsKey("dtgeContentTypeAlias")))
+        {
+            control.Editor.View = "/App_Plugins/DocTypeGridEditor/Views/doctypegrideditor.html";
+        }
     }
 }
