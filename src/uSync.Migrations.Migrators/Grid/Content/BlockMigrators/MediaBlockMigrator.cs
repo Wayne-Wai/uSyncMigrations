@@ -3,19 +3,13 @@ using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 using Umbraco.Cms.Core.Services;
 
 using uSync.Core.Extensions;
+using uSync.Migrations.Migrators.Grid.Helpers;
 using uSync.Migrations.Migrators.Grid.Models;
 
 namespace uSync.Migrations.Migrators.Grid.Content.BlockMigrators;
 
-internal class MediaBlockMigrator : ISyncBlockMigrator
+internal class MediaBlockMigrator(IMediaService mediaService) : SyncBlockMigratorBase, ISyncBlockMigrator
 {
-    private readonly IMediaService _mediaService;
-
-    public MediaBlockMigrator(IMediaService mediaService)
-    {
-        _mediaService = mediaService;
-    }
-
     public string[] Aliases => ["media"];
     public Dictionary<string, object> GetPropertyValues(GridValue.GridControl control)
     {
@@ -40,7 +34,7 @@ internal class MediaBlockMigrator : ISyncBlockMigrator
             var intValue = value.GetPropertyAsString("id");
             if (int.TryParse(intValue, out var id))
             {
-                var mediaItem = _mediaService.GetById(id);
+                var mediaItem = mediaService.GetById(id);
                 if (mediaItem != null)
                     mediaKeyGuid = mediaItem.Key;
             }                           

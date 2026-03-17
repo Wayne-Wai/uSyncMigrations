@@ -63,7 +63,7 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
 
         results.AddRange(CreateTemplateElements(alias, gridConfiguration));
         results.AddRange(CreateLayoutElements(alias, gridConfiguration));
-        results.AddRange(CreateSettingsElements(alias, gridConfiguration));
+        results.AddRange(await CreateSettingsElementsAsync(alias, gridConfiguration));
 
         return results;
     }
@@ -131,7 +131,7 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
     /// <summary>
     ///  Add any datatypes that might need to exist for the grid settings to be implimented in the grid.
     /// </summary>
-    private IEnumerable<SyncUpgradeFile> CreateSettingsElements(string gridAlias, GridConfiguration gridConfiguration)
+    private async Task<IEnumerable<SyncUpgradeFile>> CreateSettingsElementsAsync(string gridAlias, GridConfiguration gridConfiguration)
     {
         List<GridConfigurationConfig> configAndStyles = [.. gridConfiguration.Items?.Config ?? [], .. gridConfiguration.Items?.Styles ?? []];
 
@@ -152,10 +152,12 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
                 if (migrator is null) continue;
                 
                 var dataTypeAlias = migrator.GetDataTypeAlias(gridAlias, config.Label);
-                var node = migrator.GetAdditionalDataType(dataTypeAlias, config.PreValues);
+                if (dataTypeAlias is null) continue;
+
+                var node = await migrator.GetAdditionalDataTypeAsync(dataTypeAlias, config.PreValues);
                 if (node is null)
                 {
-                    var dataType = GetDataType(dataTypeAlias).Result;
+                    var dataType = await GetDataType(dataTypeAlias);
                     dataTypes.Add(new SyncDataTypeInfo(
                         Name: $"{config.Label}",
                         Alias: dataTypeAlias,

@@ -5,7 +5,7 @@ using uSync.Migrations.Migrators.Grid.Models;
 
 namespace uSync.Migrations.Migrators.Grid.Content.BlockMigrators;
 
-internal class DefaultBlockMigrator : ISyncBlockMigrator
+internal class DefaultBlockMigrator : SyncBlockMigratorBase, ISyncBlockMigrator
 {
     public string[] Aliases => [SyncGridMigrations.DefaultMigratorType];
 

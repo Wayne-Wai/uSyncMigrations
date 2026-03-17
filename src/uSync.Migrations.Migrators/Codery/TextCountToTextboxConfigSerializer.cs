@@ -12,7 +12,7 @@ internal class TextCountToTextboxConfigurationMigrator : SyncConfigurationMigrat
 
     public override string? TargetEditor => Constants.PropertyEditors.Aliases.TextBox;
 
-    public override IDictionary<string, object> GetMigratedConfiguration(string name, IDictionary<string, object> configuration)
+    public override Task<IDictionary<string, object>> GetMigratedConfigurationAsync(string name, IDictionary<string, object> configuration)
     {
         var config = new Dictionary<string, object>();
 
@@ -21,6 +21,6 @@ internal class TextCountToTextboxConfigurationMigrator : SyncConfigurationMigrat
             config["maxChars"] = maxChars;
         }
 
-        return config;
+        return Task.FromResult<IDictionary<string, object>>(config);
     }
 }

@@ -13,13 +13,6 @@ internal class GridConfigRteMigrator : GridSettingsViewMigratorBase, IGridSettin
         => "Richtext editor";
 }
 
-internal class GridConfigMacroMigrator: GridSettingsViewMigratorBase, IGridSettingsViewMigrator
-{
-    public string ViewAlias => "macro";
-    public string GetDataTypeAlias(string gridAlias, string? configItemLabel)
-        => "Label (string)";
-}
-
 internal class GridConfigMediaMigrator : GridSettingsViewMigratorBase, IGridSettingsViewMigrator  
 {
     public string ViewAlias => "media";

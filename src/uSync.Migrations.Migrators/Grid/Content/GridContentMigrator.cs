@@ -178,15 +178,17 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
         foreach (var control in area.Controls)
         {
             var contentBlock = await GetBlockItemDataFromControl(control);
-            if (contentBlock is null) continue;
+            if (contentBlock.Count == 0) continue;
 
-            result.ContentBlocks.Add(contentBlock);
+            var contentBlockKey = contentBlock[0].Key;
+
+            result.ContentBlocks.AddRange(contentBlock);
 
             var settingsBlock = await GetSettingsBlockFromGridBlock(control, gridAlias, rowName);
             if (settingsBlock is not null)
                 result.SettingsBlocks.Add(settingsBlock);
             
-            areaLayoutBlocks.Add(GridMigratorHelpers.CreateBlockLayoutItem(contentBlock.Key, settingsBlock?.Key, area.Grid ?? 0));
+            areaLayoutBlocks.Add(GridMigratorHelpers.CreateBlockLayoutItem(contentBlockKey, settingsBlock?.Key, area.Grid ?? 0));
         }
 
         if (result.ContentBlocks.Count == 0) return null;
@@ -201,18 +203,20 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
         return result;
     }
 
-    private async Task<BlockItemData?> GetBlockItemDataFromControl(GridValue.GridControl control)
+    private async Task<List<BlockItemData>> GetBlockItemDataFromControl(GridValue.GridControl control)
     {
-        if (control.Value is null) return null;
+        if (control.Value is null) return [];
 
         var migrators = _blockMigrators.GetMigrators(control.Editor);
         if (migrators.Any() is false)
-            return null;
+            return [];
 
-        var contentType = _gridContentTypeFinder.FindElementContentType(control.Editor.Alias);
-        if (contentType is null) return null;
+        var contentType = GetControlContentType(migrators, control);
 
+        if (contentType is null) return [];
         var data = GridMigratorHelpers.CreateBlockItemData(Guid.NewGuid(), contentType.Key);
+
+        var blocks = new List<BlockItemData>();
 
         foreach (var migrator in migrators)
         {
@@ -222,9 +226,21 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
                 if (blockValue is null) continue;
                 data.Values.Add(blockValue);
             }
+
+            // add any additional content blocks to the grid, that the migrator might need. 
+            blocks.AddRange(migrator.GetPropertyContentBlocks(control));
         }
 
-        return data;
+        return [data, .. blocks];
+    }
+
+    private IContentType? GetControlContentType(IEnumerable<ISyncBlockMigrator> migrators, GridValue.GridControl control)
+    {
+        var contentTypeAlias = migrators.FirstOrDefault()?.GetContentTypeAlias(control);
+        if (contentTypeAlias is null)
+            return _gridContentTypeFinder.FindElementContentType(control.Editor.Alias);
+
+        return _gridContentTypeFinder.FindContentType(contentTypeAlias);
     }
 
 

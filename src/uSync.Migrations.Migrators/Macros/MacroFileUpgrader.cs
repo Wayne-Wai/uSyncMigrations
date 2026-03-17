@@ -1,15 +1,11 @@
-﻿using Examine;
-
-using Umbraco.Cms.Core.Models;
-using Umbraco.Cms.Core.Services;
-using Umbraco.Cms.Core.Strings;
+﻿using Umbraco.Cms.Core.Strings;
 using Umbraco.Extensions;
 
 using uSync.Core;
 using uSync.Migrations.Core.Extensions;
 using uSync.Migrations.Core.Upgrade;
 
-namespace uSync.Migrations.Migrators.Grid.FileUpgraders;
+namespace uSync.Migrations.Migrators.Macros;
 
 /// <summary>
 ///  turns macros into content types. 

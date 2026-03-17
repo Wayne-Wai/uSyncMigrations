@@ -10,17 +10,17 @@ namespace uSync.Migrations.Migrators.NestedContent;
 /// <summary>
 ///  handles content use to be nestedContent, puts it into a blockList. 
 /// </summary>
-internal class NestedContentMigrator : SyncValueMapperBase, ISyncMapper
+internal class NestedContentContentMigrator : SyncValueMapperBase, ISyncMapper
 {
     private readonly IContentTypeService _contentTypeService;
 
-    public NestedContentMigrator(IEntityService entityService, IContentTypeService contentService)
+    public NestedContentContentMigrator(IEntityService entityService, IContentTypeService contentService)
         : base(entityService)
     {
         _contentTypeService = contentService;
     }
 
-    public override string Name => nameof(NestedContentMigrator);
+    public override string Name => nameof(NestedContentContentMigrator);
     public override string[] Editors => [SyncLegacyTypes.NestedContent, SyncLegacyTypes.OurNestedContent];
 
     private static string[] _reservedProperties = ["ncContentTypeAlias", "key", "name"];

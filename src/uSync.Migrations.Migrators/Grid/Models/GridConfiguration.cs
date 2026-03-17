@@ -1,6 +1,13 @@
-﻿using System;
+﻿using Json.More;
+
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Nodes;
+
+using Umbraco.Extensions;
+
+using uSync.Core.Extensions;
 
 namespace uSync.Migrations.Migrators.Grid.Models;
 
@@ -33,7 +40,7 @@ public class GridConfigurationConfig
     public string? Key { get; set; }
     public string? View { get; set; }
     public string? Modifier { get; set; }
-    public Dictionary<string, string>? ApplyTo { get; set; }
+    public JsonNode? ApplyTo { get; set; }
     public List<GridSettingsConfigurationItemPreValue>? PreValues { get; set; }
 
     public bool AppliesTo(string alias)
@@ -47,11 +54,26 @@ public class GridConfigurationConfig
     public string GetAppliesToValue()
     {
         if (ApplyTo is null) return SyncGridMigrations.ApplyTo.ApplyToAll;
-        if (ApplyTo.TryGetValue("row", out var row) && string.IsNullOrWhiteSpace(row) is false)
-            return row;
-        if (ApplyTo.TryGetValue("area", out var area) && string.IsNullOrWhiteSpace(area) is false)
-            return area;
-        return ApplyTo.FirstOrDefault().Value;
+
+        if (ApplyTo.TryConvertToJsonObject(out var applyToObject) is false)
+            return ApplyTo.ToString();
+
+        if (applyToObject.ContainsKey("row"))
+        {
+            var row = applyToObject.GetValueAsString("row");
+            if (string.IsNullOrWhiteSpace(row) is false)
+                return row;
+        }
+
+
+        if (applyToObject.ContainsKey("Area"))
+        {
+            var area = applyToObject.GetValueAsString("Area");
+            if (string.IsNullOrWhiteSpace(area) is false)
+                return area;
+        }
+
+        return applyToObject.AsValue().ToString() ?? SyncGridMigrations.ApplyTo.ApplyToAll;
     }
 }
 

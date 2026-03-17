@@ -4,6 +4,7 @@ using Umbraco.Extensions;
 using uSync.Core.DataTypes;
 using uSync.Core.Extensions;
 using uSync.Migrations.Core.Migrators;
+using uSync.Migrations.Migrators.Grid.Config.Migrators;
 using uSync.Migrations.Migrators.Grid.Helpers;
 using uSync.Migrations.Migrators.Grid.Models;
 
@@ -13,11 +14,16 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
 {
     private readonly ISyncGridContentTypeFinder _gridContentTypeFinder;
     private readonly ISyncGridNameService _gridNameService;
+    private readonly GridSettingsViewMigratorCollection _settingsMigrators;
 
-    public GridConfigSerializer(ISyncGridContentTypeFinder gridContentTypeFinder, ISyncGridNameService gridNameService)
+    public GridConfigSerializer(
+        ISyncGridContentTypeFinder gridContentTypeFinder,
+        ISyncGridNameService gridNameService,
+        GridSettingsViewMigratorCollection settingsMigrators)
     {
         _gridContentTypeFinder = gridContentTypeFinder;
         _gridNameService = gridNameService;
+        _settingsMigrators = settingsMigrators;
     }
 
     public override string? TargetEditor => Constants.PropertyEditors.Aliases.BlockGrid;
@@ -25,22 +31,22 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
 
     public string[] Editors => [Constants.PropertyEditors.Aliases.Grid];
 
-    public override IDictionary<string, object> GetMigratedConfiguration(string name, IDictionary<string, object> configuration)
+    public override async Task<IDictionary<string, object>> GetMigratedConfigurationAsync(string name, IDictionary<string, object> configuration)
     {
         var gridConfig = configuration.SerializeJsonString().DeserializeJson<GridConfiguration>();
         if (gridConfig is null) return new Dictionary<string, object>();
-        
+
         var data = new SyncGridMigrationData
         {
             GridAlias = name,
             Items = gridConfig.Items,
-            Config = [..gridConfig.Items?.Config ?? [], ..gridConfig.Items?.Styles ?? []],
+            Config = [.. gridConfig.Items?.Config ?? [], .. gridConfig.Items?.Styles ?? []],
             GroupHelper = new SyncGridGroupHelper(configuration.GetHashCode())
         };
 
         var blocks = new List<UmbBlockGridTypeModel>([
-                .. GetBlocksFromTemplates(data),
-                .. GetBlocksFromLayout(data)]);
+                .. await GetBlocksFromTemplatesAsync(data),
+                .. await GetBlocksFromLayoutAsync(data)]);
 
         var result = new Dictionary<string, object>
         {
@@ -52,7 +58,7 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
         return result;
     }
 
-    private List<UmbBlockGridTypeModel> GetBlocksFromTemplates(SyncGridMigrationData data)
+    private async Task<List<UmbBlockGridTypeModel>> GetBlocksFromTemplatesAsync(SyncGridMigrationData data)
     {
         if (data.Items?.Templates is null) return [];
 
@@ -74,12 +80,12 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
                 Areas = GetAreasFromTemplateSections(data.GridAlias, item.Name, item.Sections ?? [])
             });
 
-            items.AddRange(GetTemplateSectionsAsBlocks(data.GridAlias, elementGroupKey, item));
+            items.AddRange(await GetTemplateSectionsAsBlocksAsync(data.GridAlias, elementGroupKey, item));
         }
         return items;
     }
 
-    private List<UmbBlockGridTypeModel> GetTemplateSectionsAsBlocks(string gridAlias, Guid? elementGroupKey, GridTemplate item)
+    private async Task<List<UmbBlockGridTypeModel>> GetTemplateSectionsAsBlocksAsync(string gridAlias, Guid? elementGroupKey, GridTemplate item)
     {
         var items = new List<UmbBlockGridTypeModel>();
 
@@ -87,7 +93,7 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
         {
 
             if (section.AllowAll)
-                items.AddRange(GetAllGridBlocks(elementGroupKey));
+                items.AddRange(await GetAllGridBlocksAsync(elementGroupKey));
 
             foreach (var allowedItem in section.Allowed ?? [])
             {
@@ -145,7 +151,7 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
         return allowed;
     }
 
-    private List<UmbBlockGridTypeModel> GetBlocksFromLayout(SyncGridMigrationData data)
+    private async Task<List<UmbBlockGridTypeModel>> GetBlocksFromLayoutAsync(SyncGridMigrationData data)
     {
         if (data.Items?.Layouts is null) return [];
 
@@ -167,7 +173,7 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
                 AllowInAreas = true,
                 ContentElementTypeKey = contentKey.Value,
                 Label = item.Label,
-                Areas = GetBlockAreasFromGrid(data.GridAlias, item.Name, item.Areas),
+                Areas = await GetBlockAreasFromGridAsync(data.GridAlias, item.Name, item.Areas),
                 GroupKey = layoutGroupKey
             };
 
@@ -176,26 +182,30 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
 
             items.Add(block);
 
-            items.AddRange(GetAllowedBlocksFromLayout(data.GridAlias, item, elementGroupKey));
+            items.AddRange(await GetAllowedBlocksFromLayoutAsync(data.GridAlias, item, elementGroupKey));
         }
 
         return items;
     }
 
-    private List<UmbBlockGridTypeModel> GetAllowedBlocksFromLayout(string gridAlias, GridLayout layout, Guid? groupKey)
+    private async Task<List<UmbBlockGridTypeModel>> GetAllowedBlocksFromLayoutAsync(string gridAlias, GridLayout layout, Guid? groupKey)
     {
         List<UmbBlockGridTypeModel> items = [];
 
-        foreach(var area in layout.Areas ?? [])
+        foreach (var area in layout.Areas ?? [])
         {
             if (area.AllowAll)
             {
-                items.AddRange(GetAllGridBlocks(groupKey));
+                items.AddRange(await GetAllGridBlocksAsync(groupKey));
                 continue;
             }
 
-            foreach(var allowedItem in area.Allowed ?? [])
+            foreach (var allowedItem in area.Allowed ?? [])
             {
+                var migrator = _settingsMigrators.GetMigrator(allowedItem);
+                if (migrator is not null)
+                    items.AddRange(await migrator.GetAdditionalGridBlocksAsync(gridAlias, allowedItem, groupKey));
+
                 var elementKey = _gridContentTypeFinder.FindElementContentTypeKey(allowedItem);
                 if (elementKey is null) continue;
 
@@ -212,7 +222,7 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
         return items;
     }
 
-    private UmbBlockGridAreaType[] GetBlockAreasFromGrid(string gridAlias, string itemName, List<GridLayoutArea> gridAreas)
+    private async Task<UmbBlockGridAreaType[]> GetBlockAreasFromGridAsync(string gridAlias, string itemName, List<GridLayoutArea> gridAreas)
     {
         var areas = new List<UmbBlockGridAreaType>();
         foreach (var (area, index) in gridAreas.Select((x, i) => (x, i)))
@@ -227,7 +237,7 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
             };
 
             if (area.AllowAll is false && area.Allowed != null)
-                blockArea.SpecifiedAllowance = GetSpecificAllowancesFromAllowed(area.Allowed);
+                blockArea.SpecifiedAllowance = await GetSpecificAllowancesFromAllowedAsync(area.Allowed);
 
             areas.Add(blockArea);
         }
@@ -235,12 +245,25 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
         return [.. areas];
     }
 
-    private List<UmbBlockGridTypeAreaTypePermissions>? GetSpecificAllowancesFromAllowed(List<string>? gridAllowedList)
+    private async Task<List<UmbBlockGridTypeAreaTypePermissions>?> GetSpecificAllowancesFromAllowedAsync(List<string>? gridAllowedList)
     {
         var allowed = new List<UmbBlockGridTypeAreaTypePermissions>();
 
         foreach (var allowedElement in gridAllowedList ?? [])
         {
+            // get the keys for the allowed elements from the migrator.
+            var allowedKeys = await _settingsMigrators.GetAllowedElementKeysAsync(allowedElement);
+            if (allowedKeys.Any())
+            {
+                allowed.AddRange(allowedKeys.Select(x => new UmbBlockGridTypeAreaTypePermissions
+                {
+                    MinAllowed = 0,
+                    ElementTypeKey = x,
+                }));
+                continue;
+            }
+
+            // else, just add what we would expect the elment to be called if we created it. 
             var elementKey = _gridContentTypeFinder.FindElementContentTypeKey(allowedElement);
             if (elementKey is null) continue;
 
@@ -249,31 +272,41 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
                 MinAllowed = 0,
                 ElementTypeKey = elementKey.Value,
             });
+
         }
 
         return allowed;
     }
 
-    public IEnumerable<UmbBlockGridTypeModel> GetAllGridBlocks(Guid? groupKey)
+
+    public async Task<IEnumerable<UmbBlockGridTypeModel>> GetAllGridBlocksAsync(Guid? groupKey)
     {
         // TODO, we need to fetch these in a more efficent way, a full content type fetch is a bit Databasey.
-        var blockContentTypes = _gridContentTypeFinder.GetAllGridBlockContentTypes(groupKey);
+        var blockContentTypes = await _gridContentTypeFinder.GetAllGridBlockContentTypesAsync(groupKey);
+
+        var results = new List<UmbBlockGridTypeModel>();
 
         foreach (var contentType in blockContentTypes)
         {
-            yield return new UmbBlockGridTypeModel
+            results.Add(new UmbBlockGridTypeModel
             {
                 AllowAtRoot = false,
                 AllowInAreas = true,
                 ContentElementTypeKey = contentType.Key,
                 Label = contentType.Name,
                 GroupKey = groupKey
-            };
+            });
         }
+
+        return results;
     }
 
 }
 
+/// <summary>
+///  some data we pass around during the creation process, so at each level 
+///  we can refere to the config. 
+/// </summary>
 internal class SyncGridMigrationData
 {
     public required string GridAlias { get; init; }

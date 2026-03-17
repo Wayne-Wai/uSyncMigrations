@@ -26,13 +26,13 @@ public abstract class SyncConfigurationMigratorBase : ConfigurationSerializerBas
     /// </remarks>
     /// <param name="configuration">The current configuration of the datatype.</param>
     /// <returns>The migrated configuration.</returns>
-    public abstract IDictionary<string, object> GetMigratedConfiguration(string name, IDictionary<string, object> configuration);
+    public abstract Task<IDictionary<string, object>> GetMigratedConfigurationAsync(string name, IDictionary<string, object> configuration);
 
 
 
     public string? GetEditorAlias() => TargetEditor;
 
-    public override IDictionary<string, object> GetConfigurationImport(string name, IDictionary<string, object> configuration)
-        => GetMigratedConfiguration(name, configuration);
+    public override Task<IDictionary<string, object>> GetConfigurationImportAsync(string name, IDictionary<string, object> configuration)    
+        => GetMigratedConfigurationAsync(name, configuration);
 
 }

@@ -50,11 +50,12 @@ internal class GridEditorsConfigFileUpgrader : GridFileUpgraderBase, ISyncFileUp
             if (migrator is null) continue;
 
             var dataTypeAlias = migrator.GetDataTypeAlias("config", editor.View);
+            if (dataTypeAlias is null) continue;
 
             var definition = Guid.NewGuid();
             var propertyType = Constants.PropertyEditors.Aliases.Label;
 
-            var node = migrator.GetAdditionalDataType(dataTypeAlias, null);
+            var node = await migrator.GetAdditionalDataTypeAsync(dataTypeAlias, null);
             if (node is null)
             {
                 // if the migrator is using a pre-existing datatype alias, we will try to find it and use it.

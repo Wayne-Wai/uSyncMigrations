@@ -16,7 +16,7 @@ public class SpectrumColourPickerConfigurationMigrator : SyncConfigurationMigrat
 
     public override string? TargetEditor => Constants.PropertyEditors.Aliases.ColorPickerEyeDropper;
 
-    public override IDictionary<string, object> GetMigratedConfiguration(string name, IDictionary<string, object> configuration)
+    public override Task<IDictionary<string, object>> GetMigratedConfigurationAsync(string name, IDictionary<string, object> configuration)
     {
         var mappedConfiguration = MigratePropertyNames(configuration, new Dictionary<string, string>
         {
@@ -26,6 +26,6 @@ public class SpectrumColourPickerConfigurationMigrator : SyncConfigurationMigrat
         if (configuration.TryGetValue("palette", out var value) && value is string palletValue)
             mappedConfiguration["palette"] = !string.IsNullOrWhiteSpace(palletValue);
 
-        return mappedConfiguration;
+        return Task.FromResult(mappedConfiguration);
     }
 }

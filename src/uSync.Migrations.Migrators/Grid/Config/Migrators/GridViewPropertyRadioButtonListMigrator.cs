@@ -24,20 +24,21 @@ public class GridViewPropertyRadioButtonListMigrator : GridSettingsViewMigratorB
         return newAlias;
     }
 
-    public override XElement? GetAdditionalDataType(string dataTypeAlias, List<GridSettingsConfigurationItemPreValue>? preValues)
+    public override Task<XElement?> GetAdditionalDataTypeAsync(string dataTypeAlias, List<GridSettingsConfigurationItemPreValue>? preValues)
     {
-        if (preValues is null) return null;
+        if (preValues is null) 
+            return Task.FromResult<XElement?>(null);
 
         var radioButtonConfig = new RadioButtonListConfig
         {
             Items = preValues.Select(x => x.Value).WhereNotNull().ToList() ?? []
         };
 
-        return SyncMigrationDataTypeHelper.CreateDataType(
+        return Task.FromResult<XElement?>(SyncMigrationDataTypeHelper.CreateDataType(
                 dataTypeAlias,
                 Constants.PropertyEditors.Aliases.RadioButtonList,
                 SyncGridMigrations.ElementContainerName,
-                radioButtonConfig.SerializeJsonString());
+                radioButtonConfig.SerializeJsonString()));
     }
 
     class RadioButtonListConfig

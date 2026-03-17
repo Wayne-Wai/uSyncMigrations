@@ -30,7 +30,7 @@ internal class NestedContentConfigurationMigrator : SyncConfigurationMigratorBas
     public string[] Editors => [SyncLegacyTypes.NestedContent, SyncLegacyTypes.OurNestedContent];
 
     public override string? TargetEditor => Constants.PropertyEditors.Aliases.BlockList;
-    public override IDictionary<string, object> GetMigratedConfiguration(string name, IDictionary<string, object> configuration)
+    public override Task<IDictionary<string, object>> GetMigratedConfigurationAsync(string name, IDictionary<string, object> configuration)
     {
         var config = new BlockListConfiguration();
 
@@ -58,6 +58,6 @@ internal class NestedContentConfigurationMigrator : SyncConfigurationMigratorBas
         }
 
         var result = config.SerializeJsonString().DeserializeJson<Dictionary<string, object>>() ?? configuration;
-        return result;
+        return Task.FromResult(result);
     }
 }

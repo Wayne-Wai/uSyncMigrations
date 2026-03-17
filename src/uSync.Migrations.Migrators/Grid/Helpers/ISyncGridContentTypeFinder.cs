@@ -15,5 +15,6 @@ internal interface ISyncGridContentTypeFinder
     Guid? FindSettingsContentTypeKey(string gridAlias, string? layout);
     IContentType? FindTemplateContentType(string gridAlias, string? templateAlias);
     Guid FindTemplateContentTypeKey(string gridAlias, string? templateAlias);
-    IEnumerable<IContentType> GetAllGridBlockContentTypes(Guid? groupKey);
+    Task<IEnumerable<IContentType>> GetAllGridBlockContentTypesAsync(Guid? groupKey);
+    Guid? FindContentTypeKey(string alias);
 }

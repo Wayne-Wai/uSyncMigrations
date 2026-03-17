@@ -10,7 +10,7 @@ namespace uSync.Migrations.Migrators.Grid.Models;
 ///  these are the same as the models in the UI, which contain all the bits we might want to
 ///  set and change. 
 /// </remarks>
-internal class UmbBlockGridTypeModel : IBlockConfiguration
+public class UmbBlockGridTypeModel : IBlockConfiguration
 {
     // Block Settings
     public int? AreaGridColumns { get; set; }
@@ -32,17 +32,17 @@ internal class UmbBlockGridTypeModel : IBlockConfiguration
     public Guid? GroupKey { get; set; }
 }
 
-internal class UmbBlockGridTypeColumnSpanOptions { 
+public class UmbBlockGridTypeColumnSpanOptions { 
     public required string ColumnSpan { get; set; }
 }
 
-internal class UmbBlockGridAreaType : BlockGridConfiguration.BlockGridAreaConfiguration
+public class UmbBlockGridAreaType : BlockGridConfiguration.BlockGridAreaConfiguration
 {
     public List<UmbBlockGridTypeAreaTypePermissions>? SpecifiedAllowance { get; set; }
     public string? CreateLabel { get; set; }
 }
 
-internal class UmbBlockGridTypeAreaTypePermissions
+public class UmbBlockGridTypeAreaTypePermissions
 {
     public int MinAllowed { get; set; }
     public int? MaxAllowed { get; set; }
@@ -50,7 +50,7 @@ internal class UmbBlockGridTypeAreaTypePermissions
     public Guid? GroupKey { get; set; }
 }
 
-internal class UmbBlockGridTypeGroupType
+public class UmbBlockGridTypeGroupType
 {
     public required string Name { get; set; }
     public Guid Key { get; set; }

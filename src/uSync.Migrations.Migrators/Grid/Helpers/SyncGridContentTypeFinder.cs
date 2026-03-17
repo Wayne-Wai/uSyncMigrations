@@ -67,11 +67,11 @@ internal class SyncGridContentTypeFinder : ISyncGridContentTypeFinder
     {
         var contentTypeAlias = _gridNameHelper.GetSettingsContentTypeAlias(gridAlias, layout);
         var item = _contentTypeService.Get(contentTypeAlias);
-        if (item == null) { 
+        if (item == null && layout != SyncGridMigrations.ApplyTo.ApplyToAll) { 
             // if there isn't one just for this type, check to see if there is one for apply all.
             return FindSettingsContentTypeKey(gridAlias, SyncGridMigrations.ApplyTo.ApplyToAll);
         }
-        return item.Key;
+        return item?.Key;
     }
 
     public IContentType? FindElementContentType(string elementAlias)
@@ -83,16 +83,21 @@ internal class SyncGridContentTypeFinder : ISyncGridContentTypeFinder
     public Guid? FindElementContentTypeKey(string elementAlias)
     {
         var contentTypeAlias = _gridNameHelper.GetElementContentTypeAlias(elementAlias);
-        var item = _contentTypeService.Get(contentTypeAlias);
-        if (item == null) 
-            return contentTypeAlias.ToGuid();
+        return FindContentTypeKey(contentTypeAlias);
+    }
+
+    public Guid? FindContentTypeKey(string alias)
+    {
+        var item = _contentTypeService.Get(alias);
+        if (item == null)
+            return alias.ToGuid();
         return item.Key;
     }
 
     public IContentType? FindContentType(string alias)
         => _contentTypeService.Get(alias);
 
-    public IEnumerable<IContentType> GetAllGridBlockContentTypes(Guid? groupKey)
-        => _contentTypeService.GetAll()
-            .Where(x => x.Alias.StartsWith("Grid_Element"));
+    public Task<IEnumerable<IContentType>> GetAllGridBlockContentTypesAsync(Guid? groupKey)
+        => Task.FromResult<IEnumerable<IContentType>>(_contentTypeService.GetAll()
+            .Where(x => x.Alias.StartsWith("Grid_Element")));
 }

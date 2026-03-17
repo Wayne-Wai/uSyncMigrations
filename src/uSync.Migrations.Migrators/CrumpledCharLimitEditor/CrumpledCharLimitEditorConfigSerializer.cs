@@ -11,11 +11,11 @@ internal class CrumpledCharLimitEditorConfigurationMigrator : SyncConfigurationM
     public string[] Editors => ["Crumpled.CharLimitEditor"];
     public override string? TargetEditor => Constants.PropertyEditors.Aliases.TextBox;
 
-    public override IDictionary<string, object> GetMigratedConfiguration(string name, IDictionary<string, object> configuration)
+    public override Task<IDictionary<string, object>> GetMigratedConfigurationAsync(string name, IDictionary<string, object> configuration)
     {
-        return MigratePropertyNames(configuration, new Dictionary<string, string>
+        return Task.FromResult(MigratePropertyNames(configuration, new Dictionary<string, string>
         {
             { "limit", "maxChars"},
-        });
+        }));
     }
 }
