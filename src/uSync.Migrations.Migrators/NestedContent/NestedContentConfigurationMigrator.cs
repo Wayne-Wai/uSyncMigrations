@@ -23,7 +23,7 @@ internal class NestedContentConfigurationMigrator : SyncConfigurationMigratorBas
 
     public NestedContentConfigurationMigrator(IContentTypeService contentTypeService)
     {
-        this._contentTypeService = contentTypeService;
+        _contentTypeService = contentTypeService;
     }
 
     public string Name => nameof(NestedContentConfigurationMigrator);

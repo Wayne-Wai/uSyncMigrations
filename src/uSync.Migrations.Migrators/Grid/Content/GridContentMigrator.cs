@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Nodes;
+﻿using Microsoft.Extensions.Logging;
+
+using System.Text.Json.Nodes;
 
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models;
@@ -24,13 +26,16 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
     private readonly SyncBlockMigratorCollection _blockMigrators;
     private readonly SyncValueMapperCollection _valueMappers;
 
+    private readonly ILogger<GridContentMigrator> _logger;
+
     public GridContentMigrator(
         IEntityService entityService,
         ISyncGridNameService gridNameHelper,
         IDataTypeService dataTypeService,
         ISyncGridContentTypeFinder gridContentTypeFinder,
         SyncBlockMigratorCollection blockMigrators,
-        SyncValueMapperCollection valueMappers)
+        SyncValueMapperCollection valueMappers,
+        ILogger<GridContentMigrator> logger)
         : base(entityService)
     {
         _gridNameHelper = gridNameHelper;
@@ -38,6 +43,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
         _gridContentTypeFinder = gridContentTypeFinder;
         _blockMigrators = blockMigrators;
         _valueMappers = valueMappers;
+        _logger = logger;
     }
 
     public override string Name => nameof(GridContentMigrator);
@@ -50,16 +56,27 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
             return value;
 
         if (value.TryGetGridValue(out var gridValue) is false)
+        {
+            _logger.LogWarning("MIGRATION WARNING: Value for property {PropertyAlias} is not a valid Grid value, skipping migration for this value.", propertyType.Alias);
             return value;
+        }
 
         // fix the dtge views. 
         FixDtgeViews(gridValue);
 
         var gridDataType = await _dataTypeService.GetAsync(propertyType.DataTypeKey);
-        if (gridDataType is null) return value;
+        if (gridDataType is null)
+        {
+            _logger.LogWarning("MIGRATION WARNING: Could not find data type for property {PropertyAlias}, skipping migration for this value.", propertyType.Alias);
+            return value;
+        }
 
         var block = await ConvertGridValueToBlockValue(gridDataType, gridValue);
-        if (block is null) return value;
+        if (block is null)
+        {
+            _logger.LogWarning("MIGRATION WARNING: Could not convert Grid value to Block value for property {PropertyAlias}, skipping migration for this value.", propertyType.Alias);
+            return value;
+        }
 
         // ensure the expose values are also set. 
         if (block.Expose.Count == 0)
@@ -78,10 +95,18 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
         var templateAlias = grid.Name;
 
         if (gridAlias is null || templateAlias is null) return null;
-        if (grid.Sections.Any() is false) return null;
+        if (grid.Sections.Any() is false)
+        {
+            _logger.LogInformation("MIGRATION INFO: Grid with alias {GridAlias} and template {TemplateAlias} has no sections, skipping migration for this value.", gridAlias, templateAlias);
+            return null;
+        }
 
         var templateContentType = _gridContentTypeFinder.FindTemplateContentType(gridAlias, templateAlias);
-        if (templateContentType is null) return null;
+        if (templateContentType is null)
+        {
+            _logger.LogWarning("MIGRATION WARNING: Could not find template content type for Grid with alias {GridAlias} and template {TemplateAlias}, skipping migration for this value.", gridAlias, templateAlias);
+            return null;
+        }
 
         var sections = grid.Sections.Select(x =>
             (Columns: x.Grid ?? 0, x.Rows));
@@ -100,10 +125,18 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
 
             foreach (var row in section.Rows)
             {
-                if (row.Name is null) continue;
+                if (row.Name is null)
+                {
+                    _logger.LogWarning("MIGRATION WARNING: Found a row without a name in Grid with alias {GridAlias} and template {TemplateAlias}, skipping this row in the migration.", gridAlias, templateAlias);
+                    continue;
+                }
 
                 var rowResult = await ConvertGridRow(gridAlias, row, row.Name);
-                if (rowResult is null) continue;
+                if (rowResult is null)
+                {
+                    _logger.LogInformation("MIGRATION INFO: Row with name {RowName} in Grid with alias {GridAlias} and template {TemplateAlias} has no content, skipping this row in the migration.", row.Name, gridAlias, templateAlias);
+                    continue;
+                }
 
                 block.ContentData.AddRange(rowResult.ContentBlocks);
                 block.SettingsData.AddRange(rowResult.SettingsBlocks);
@@ -138,7 +171,11 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
         foreach (var (area, areaIndex) in row.Areas.Select((x, i) => (x, i)))
         {
             var areaResult = await ConvertGridArea(gridAlias, rowName, areaIndex, area);
-            if (areaResult is null) continue;
+            if (areaResult is null)
+            {
+                _logger.LogWarning("MIGRATION WARNING: Found an area without content in row {RowName} in Grid with alias {GridAlias}, skipping this area in the migration.", rowName, gridAlias);
+                continue;
+            }
 
             if (areaResult.Layouts is not null)
                 rowLayoutAreas.Add(areaResult.Layouts);
@@ -178,7 +215,11 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
         foreach (var control in area.Controls)
         {
             var contentBlock = await GetBlockItemDataFromControl(control);
-            if (contentBlock.Count == 0) continue;
+            if (contentBlock.Count == 0)
+            {
+                _logger.LogWarning("MIGRATION WARNING: Found a control without content in area {AreaIndex} in row {RowName} in Grid with alias {GridAlias}, skipping this control in the migration.", areaIndex, rowName, gridAlias);
+                continue;
+            }
 
             var contentBlockKey = contentBlock[0].Key;
 

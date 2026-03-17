@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 
 using Umbraco.Extensions;
 
@@ -9,7 +6,6 @@ namespace uSync.Migrations.Core.Extensions;
 
 public static class SyncMigrationDataTypeHelper
 {
-
     public static XElement CreateDataType(string name, string propertyType, string folder, string configuration)
     {
         return new XElement("DataType",

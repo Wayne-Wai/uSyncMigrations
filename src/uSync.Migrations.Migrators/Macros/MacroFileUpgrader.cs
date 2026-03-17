@@ -16,7 +16,7 @@ namespace uSync.Migrations.Migrators.Macros;
 /// </remarks>
 internal class MacroFileUpgrader : ISyncFileUpgrader
 {
-    private const string MacroContainer = "Macros";
+    private const string _macroContainerName = "Macros";
     
     private readonly IShortStringHelper _shortStringHelper;
 
@@ -63,7 +63,7 @@ internal class MacroFileUpgrader : ISyncFileUpgrader
                 name: $"{name} - Macro",
                 key: key,
                 alias: alias,
-                folder: MacroContainer,
+                folder: _macroContainerName,
                 icon: "icon-settings color-red",
                 description: "Migrated: Converted from macro",
                 compositions: [],
@@ -80,11 +80,11 @@ internal class MacroFileUpgrader : ISyncFileUpgrader
 
         return new SyncUpgradeFile
         {
-            Filename = Path.Combine("DataTypes\\Macros", $"{safeName}.config"),
+            Filename = Path.Combine("DataTypes", _macroContainerName, $"{safeName}.config"),
             Node = SyncMigrationDataTypeHelper.CreateDataType(
                 name: name,
                 propertyType: editorAlias,
-                folder: MacroContainer,
+                folder: _macroContainerName,
                 configuration: "{}"
             )
         };

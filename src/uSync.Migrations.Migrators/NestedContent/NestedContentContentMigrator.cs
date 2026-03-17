@@ -1,4 +1,6 @@
-﻿using Umbraco.Cms.Core.Models.Blocks;
+﻿using Microsoft.Extensions.Logging;
+
+using Umbraco.Cms.Core.Models.Blocks;
 using Umbraco.Cms.Core.Services;
 
 using uSync.Core;
@@ -13,11 +15,13 @@ namespace uSync.Migrations.Migrators.NestedContent;
 internal class NestedContentContentMigrator : SyncValueMapperBase, ISyncMapper
 {
     private readonly IContentTypeService _contentTypeService;
+    private readonly ILogger<NestedContentContentMigrator> _logger;
 
-    public NestedContentContentMigrator(IEntityService entityService, IContentTypeService contentService)
+    public NestedContentContentMigrator(IEntityService entityService, IContentTypeService contentService, ILogger<NestedContentContentMigrator> logger)
         : base(entityService)
     {
         _contentTypeService = contentService;
+        _logger = logger;
     }
 
     public override string Name => nameof(NestedContentContentMigrator);
@@ -31,19 +35,30 @@ internal class NestedContentContentMigrator : SyncValueMapperBase, ISyncMapper
         if (value.Contains("ncContentTypeAlias") is false)
             return Task.FromResult<string?>(value);
 
-        
+
         if (TryGetNestedContent(value, out var nestedContent) is false || nestedContent == null)
+        {
+            _logger.LogWarning("MIGRATION WARNING: Value for editor {EditorAlias} contains 'ncContentTypeAlias' but could not be deserialized. Value: {Value}", editorAlias, value);
             return Task.FromResult<string?>(value);
+        }
 
         BlockListValue blockListValue = new BlockListValue();
 
         foreach (var item in nestedContent)
         {
             var contentTypeAlias = item.TryGetValue("ncContentTypeAlias", out var alias) ? alias?.ToString() : null;
-            if (contentTypeAlias == null) continue;
+            if (contentTypeAlias == null)
+            {
+                _logger.LogWarning("MIGRATION WARNING: Could not find 'ncContentTypeAlias' for Nested Content item. Skipping item. Value: {Value}", value);
+                continue;
+            }
 
             var contentType = _contentTypeService.Get(contentTypeAlias);
-            if (contentType == null) continue;
+            if (contentType == null)
+            {
+                _logger.LogWarning("MIGRATION WARNING: Could not find content type with alias {ContentTypeAlias} for Nested Content item. Skipping item. Value: {Value}", contentTypeAlias, value);
+                continue;
+            }
 
             var blockItemData = new BlockItemData
             {
