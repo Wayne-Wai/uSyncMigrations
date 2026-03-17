@@ -13,5 +13,9 @@ export default {
     ignoreConfirmHeadline: "Ignore legacy folder?",
     ignoreConfirmMessage:
       "Are you sure you want to ignore the legacy folder? You can re-enable it later if needed.",
+
+    upgradeConfirmHeadline: "Upgrade legacy folder?",
+    upgradeConfirmMessage:
+      "Are you sure you want to upgrade the legacy folder? This will move all files from the old folder to the new folder and update the file formats to be compatible with the latest version of uSync.",
   },
 };

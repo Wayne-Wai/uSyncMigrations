@@ -18,6 +18,9 @@ export class SyncUpgradeViewElement extends UmbLitElement {
   @state()
   _legacy: SyncUpgradeCheckResponse | undefined;
 
+  @state()
+  upgradeButtonState: "waiting" | "failed" | "success" | undefined;
+
   constructor() {
     super();
 
@@ -52,7 +55,19 @@ export class SyncUpgradeViewElement extends UmbLitElement {
   }
 
   async #onUpgrade() {
-    await this.#upgradeContext?.upgrade();
+    umbConfirmModal(this, {
+      headline: this.localize.term("usyncmigrations_upgradeConfirmHeadline"),
+      content: this.localize.term("usyncmigrations_upgradeConfirmMessage"),
+      color: "warning",
+      confirmLabel: this.localize.term("general_confirm"),
+    })
+      .then(async () => {
+        await this.#upgradeContext?.upgrade();
+        this.upgradeButtonState = "success";
+      })
+      .catch(() => {
+        // Modal was closed without confirming
+      });
   }
 
   override render() {
@@ -91,6 +106,7 @@ export class SyncUpgradeViewElement extends UmbLitElement {
               label=${this.localize.term("usyncmigrations_upgradeButton")}
               look="primary"
               @click=${this.#onUpgrade}
+              .state=${this.upgradeButtonState}
             ></uui-button>
           </div>
         </uui-box>
