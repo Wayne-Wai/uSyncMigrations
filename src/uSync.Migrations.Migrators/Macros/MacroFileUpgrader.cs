@@ -8,8 +8,12 @@ using uSync.Migrations.Core.Upgrade;
 namespace uSync.Migrations.Migrators.Macros;
 
 /// <summary>
-///  turns macros into content types. 
+///  Turns macro config files into content types, and creates datatypes for the macro parameters.
 /// </summary>
+/// <remarks>
+///  FileUpgraders run when the user presses 'upgrade' in the migrations tab, they prepare files
+///  so when an import happens things will get created for the legacy items. 
+/// </remarks>
 internal class MacroFileUpgrader : ISyncFileUpgrader
 {
     private const string MacroContainer = "Macros";
