@@ -3,6 +3,7 @@ using Umbraco.Extensions;
 
 using uSync.Core.DataTypes;
 using uSync.Core.Extensions;
+using uSync.Migrations.Core.Extensions;
 using uSync.Migrations.Core.Migrators;
 using uSync.Migrations.Migrators.Grid.Config.Migrators;
 using uSync.Migrations.Migrators.Grid.Helpers;
@@ -33,7 +34,7 @@ internal class GridConfigSerializer : SyncConfigurationMigratorBase, IConfigurat
 
     public override async Task<IDictionary<string, object>> GetMigratedConfigurationAsync(string name, IDictionary<string, object> configuration)
     {
-        var gridConfig = configuration.SerializeJsonString().DeserializeJson<GridConfiguration>();
+        var gridConfig =  configuration.ConvertFromDictionary<GridConfiguration>();
         if (gridConfig is null) return new Dictionary<string, object>();
 
         var data = new SyncGridMigrationData

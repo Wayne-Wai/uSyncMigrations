@@ -14,13 +14,9 @@ internal class TextCountToTextboxConfigurationMigrator : SyncConfigurationMigrat
 
     public override Task<IDictionary<string, object>> GetMigratedConfigurationAsync(string name, IDictionary<string, object> configuration)
     {
-        var config = new Dictionary<string, object>();
-
-        if (configuration.TryGetValue("limit", out var limit) && int.TryParse(limit?.ToString(), out var maxChars))
+        return Task.FromResult(MigratePropertyNames(configuration, new Dictionary<string, string>
         {
-            config["maxChars"] = maxChars;
-        }
-
-        return Task.FromResult<IDictionary<string, object>>(config);
+            { "limit", "maxChars" },
+        }));
     }
 }
