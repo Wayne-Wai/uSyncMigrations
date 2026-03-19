@@ -1,17 +1,18 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
 
 using Umbraco.Extensions;
+
+using uSync.Core.Extensions;
 
 namespace uSync.Migrations.Core.Extensions;
 
 public static class SystemTextJsonExtensions
 {
     public static TObject? ConvertFromDictionary<TObject>(this IDictionary<string, object> dictionary)
-        => JsonSerializer.Deserialize<TObject>(JsonSerializer.Serialize(dictionary));
+        => dictionary.SerializeJsonString().DeserializeJson<TObject>();
 
     public static IDictionary<string, object>? ConvertToDictionary<TObject>(this TObject obj)
-        => JsonSerializer.Deserialize<Dictionary<string, object>>(JsonSerializer.Serialize(obj));
+        => obj?.SerializeJsonString().DeserializeJson<Dictionary<string, object>>() ?? [];
 
     public static bool TryGetValueAsObject<TObject>(this IDictionary<string, object> dictionary, string key, 
         [NotNullWhen(true)] out TObject? result)
