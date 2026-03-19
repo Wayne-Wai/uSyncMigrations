@@ -1,15 +1,9 @@
-﻿using Microsoft.OpenApi;
-
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 using Umbraco.Cms.Core.Models;
 
-using uSync.Core.Extensions;
 using uSync.Migrations.Migrators.Grid.Models;
 
 namespace uSync.Migrations.Migrators.Grid.Extensions;
@@ -28,12 +22,12 @@ internal static class GridSectionExtensions
 
     public static JsonSerializerOptions _jsonSerializerOptions = new()
     {
-            PropertyNameCaseInsensitive = true,
-            ReadCommentHandling = JsonCommentHandling.Skip,
-            AllowTrailingCommas = true,
-            NumberHandling = JsonNumberHandling.AllowReadingFromString,
-        };
-    
+        PropertyNameCaseInsensitive = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        AllowTrailingCommas = true,
+        NumberHandling = JsonNumberHandling.AllowReadingFromString,
+    };
+
 
     public static bool TryGetGridValue(this string value, [NotNullWhen(true)] out GridValue? gridValue)
     {

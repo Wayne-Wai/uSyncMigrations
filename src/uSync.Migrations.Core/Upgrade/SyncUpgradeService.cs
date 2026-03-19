@@ -131,11 +131,11 @@ internal class SyncUpgradeService : ISyncUpgradeService
         if (_syncFileService.DirectoryExists(configFolder) is false)
             return;
 
-        foreach(var file in _syncFileService.GetFiles(configFolder, "*.*"))
+        foreach (var file in _syncFileService.GetFiles(configFolder, "*.*"))
         {
             var relativePath = file.Replace(folderPath, string.Empty).TrimStart(Path.DirectorySeparatorChar);
             var filename = Path.GetFileName(relativePath);
-            
+
             var upgraders = _fileUpgraders.GetUpgraders(filename);
             if (upgraders?.Length > 0)
             {
@@ -190,7 +190,7 @@ internal class SyncUpgradeService : ISyncUpgradeService
         {
             await SaveUpgradedFileAsync(targetFolder, file);
         }
-    }   
+    }
 
     private async Task SaveUpgradedFileAsync(string targetFolder, SyncUpgradeFile file)
     {

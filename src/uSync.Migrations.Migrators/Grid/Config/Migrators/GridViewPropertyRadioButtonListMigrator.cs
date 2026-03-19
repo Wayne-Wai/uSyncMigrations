@@ -26,7 +26,7 @@ public class GridViewPropertyRadioButtonListMigrator : GridSettingsViewMigratorB
 
     public override Task<XElement?> GetAdditionalDataTypeAsync(string dataTypeAlias, List<GridSettingsConfigurationItemPreValue>? preValues)
     {
-        if (preValues is null) 
+        if (preValues is null)
             return Task.FromResult<XElement?>(null);
 
         var radioButtonConfig = new RadioButtonListConfig

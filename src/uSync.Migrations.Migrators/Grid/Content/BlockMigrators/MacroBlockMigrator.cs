@@ -9,7 +9,7 @@ using uSync.Migrations.Migrators.Grid.Models;
 
 namespace uSync.Migrations.Migrators.Grid.Content.BlockMigrators;
 
-internal class MacroBlockMigrator(IContentTypeService contentTypeService) 
+internal class MacroBlockMigrator(IContentTypeService contentTypeService)
     : SyncBlockMigratorBase, ISyncBlockMigrator
 {
     /// <inheritdoc />
@@ -53,11 +53,11 @@ internal class MacroBlockMigrator(IContentTypeService contentTypeService)
 
     public override string? GetContentTypeAlias(GridValue.GridControl control)
     {
-        if (TryGetMacroGridProperty(control, out var value) is false) 
+        if (TryGetMacroGridProperty(control, out var value) is false)
             return null;
 
         var macroAlias = value.GetPropertyAsString("macroAlias");
-        if (string.IsNullOrWhiteSpace(macroAlias)) 
+        if (string.IsNullOrWhiteSpace(macroAlias))
             return null;
 
         return macroAlias;
@@ -76,7 +76,7 @@ internal class MacroBlockMigrator(IContentTypeService contentTypeService)
             || control.Value.TryConvertToJsonObject(out var json) is false
             || json.ContainsKey("macroAlias") is false)
             return false;
-        
+
         value = json;
         return true;
     }

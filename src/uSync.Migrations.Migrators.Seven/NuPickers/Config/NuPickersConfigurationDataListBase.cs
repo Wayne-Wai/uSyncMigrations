@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 
-using System.Diagnostics.CodeAnalysis;
-
-using uSync.Core.Extensions;
 using uSync.Migrations.Core.Migrators;
 using uSync.Migrations.Migrators.NuPickers.Configuration;
 
@@ -22,7 +19,7 @@ internal abstract class NuPickersConfigurationDataListBase : SyncConfigurationMi
         if (assemblyFileName == null)
             return assemblyFileName;
 
-        var assemblyName = Path.Combine(Path.GetDirectoryName(assemblyFileName) ?? "", 
+        var assemblyName = Path.Combine(Path.GetDirectoryName(assemblyFileName) ?? "",
             Path.GetFileNameWithoutExtension(assemblyFileName));
 
         if (assemblyName is null) return assemblyFileName;

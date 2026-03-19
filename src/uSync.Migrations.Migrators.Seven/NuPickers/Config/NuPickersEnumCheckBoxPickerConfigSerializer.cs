@@ -1,12 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 using uSync.Core.DataTypes;
 using uSync.Core.Mapping;
 using uSync.Migrations.Core.Extensions;

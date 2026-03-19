@@ -37,9 +37,9 @@ internal static class uSyncMigtationsClientApi
                 Version = "1.0",
                 Contact = new OpenApiContact
                 {
-                     Name = "Jumoo",
-                     Email = "info@jumoo.co.uk",
-                     Url = new Uri("https://jumoo.co.uk")
+                    Name = "Jumoo",
+                    Email = "info@jumoo.co.uk",
+                    Url = new Uri("https://jumoo.co.uk")
                 }
             });
 

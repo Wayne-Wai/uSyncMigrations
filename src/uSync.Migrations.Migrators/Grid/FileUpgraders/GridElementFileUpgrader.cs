@@ -1,8 +1,5 @@
-﻿using System.Diagnostics;
-
-using Umbraco.Cms.Core;
+﻿using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Services;
-using Umbraco.Cms.Core.Strings;
 using Umbraco.Extensions;
 
 using uSync.Core;
@@ -38,7 +35,7 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
 
     public GridElementFileUpgrader(GridSettingsViewMigratorCollection settingsMigrators, ISyncGridNameService gridNameHelper, IDataTypeService dataTypeService)
         : base(dataTypeService)
-    { 
+    {
         _settingsMigrators = settingsMigrators;
         _gridNameHelper = gridNameHelper;
     }
@@ -80,7 +77,7 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
     {
         // Todo: flatten - if there is only one template, can we remove it ? 
 
-        foreach(var template in gridConfiguration.Items?.Templates ?? [])
+        foreach (var template in gridConfiguration.Items?.Templates ?? [])
         {
             if (template.Sections is null) continue;
 
@@ -106,7 +103,7 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
     /// </summary>
     private IEnumerable<SyncUpgradeFile> CreateLayoutElements(string alias, GridConfiguration gridConfiguration)
     {
-        foreach(var layout in gridConfiguration.Items?.Layouts ?? [])
+        foreach (var layout in gridConfiguration.Items?.Layouts ?? [])
         {
             if (layout.Areas is null || layout.Areas.Count == 0)
                 continue;
@@ -124,7 +121,7 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
                     description: "Migrated : Grid Layout ",
                     compositions: [],
                     dataTypes: [])
-            };            
+            };
         }
     }
 
@@ -144,13 +141,13 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
 
         foreach (var configGroup in groups)
         {
-            var dataTypes = new List<SyncDataTypeInfo>(); 
+            var dataTypes = new List<SyncDataTypeInfo>();
 
             foreach (var config in configGroup)
             {
                 var migrator = _settingsMigrators.GetMigrator(config.View);
                 if (migrator is null) continue;
-                
+
                 var dataTypeAlias = migrator.GetDataTypeAlias(gridAlias, config.Label);
                 if (dataTypeAlias is null) continue;
 
@@ -167,7 +164,7 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
 
                     continue;
                 }
-                
+
                 results.Add(new SyncUpgradeFile
                 {
                     Filename = Path.Combine(SyncGridMigrations.DataTypeFolder, _gridNameHelper.MakeSafeConfig($"Grid_Settings_{gridAlias}_{dataTypeAlias}")),
@@ -211,7 +208,7 @@ internal class GridElementFileUpgrader : GridFileUpgraderBase, ISyncFileUpgrader
     {
         // applies to all doesn't have any compositions
         if (appliesTo == SyncGridMigrations.ApplyTo.ApplyToAll) return [];
-        
+
         var appliesToAllAlias = _gridNameHelper.GetSettingsContentTypeAlias(gridAlias, SyncGridMigrations.ApplyTo.ApplyToAll);
         return [new SyncCompositionInfo(appliesToAllAlias.ToGuid(), appliesToAllAlias)];
     }

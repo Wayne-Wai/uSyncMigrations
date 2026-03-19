@@ -189,8 +189,8 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
 
         // setup the row content and settings block 
         var rowContentBlock = await GetBlockItemFromRow(rowName, gridAlias);
-        if (rowContentBlock is null) return result; 
-        
+        if (rowContentBlock is null) return result;
+
         result.ContentBlocks.Add(rowContentBlock);
 
         var rowSettingsBlock = await GetSettingsBlockFromGridBlock(row, gridAlias, rowName);
@@ -228,7 +228,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
             var settingsBlock = await GetSettingsBlockFromGridBlock(control, gridAlias, rowName);
             if (settingsBlock is not null)
                 result.SettingsBlocks.Add(settingsBlock);
-            
+
             areaLayoutBlocks.Add(GridMigratorHelpers.CreateBlockLayoutItem(contentBlockKey, settingsBlock?.Key, area.Grid ?? 0));
         }
 
@@ -306,7 +306,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
 
         if (gridBlock.HasStyles())
         {
-            foreach(var style in gridBlock.Styles)
+            foreach (var style in gridBlock.Styles)
             {
                 var value = await GetBlockPropertyValue(contentType, style.Key, style.Value?.ToString());
                 if (value is null) continue;

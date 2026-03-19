@@ -1,6 +1,4 @@
-﻿using MimeKit.Encodings;
-
-using Umbraco.Cms.Core.Models;
+﻿using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Services;
 
 using uSync.Migrations.Migrators.Grid.Models;
@@ -16,7 +14,7 @@ namespace uSync.Migrations.Migrators.Grid.Config.Migrators;
 ///  as required. 
 /// </remarks>
 /// 
-internal class GridConfigMacroMigrator: GridSettingsViewMigratorBase, IGridSettingsViewMigrator
+internal class GridConfigMacroMigrator : GridSettingsViewMigratorBase, IGridSettingsViewMigrator
 {
     private readonly IContentTypeContainerService _contentTypeContainerService;
     private readonly IContentTypeService _contentTypeService;
@@ -55,9 +53,9 @@ internal class GridConfigMacroMigrator: GridSettingsViewMigratorBase, IGridSetti
         return result;
     }
 
-    private async Task<IEnumerable<IContentType>>GetMacroContentTypes(string gridAlias, string blockLabel)
+    private async Task<IEnumerable<IContentType>> GetMacroContentTypes(string gridAlias, string blockLabel)
     {
-        List<EntityContainer> macroContainer = [..await _contentTypeContainerService.GetAsync("Macros", 1)];
+        List<EntityContainer> macroContainer = [.. await _contentTypeContainerService.GetAsync("Macros", 1)];
         if (macroContainer.Count == 0) return [];
         return _contentTypeService.GetChildren(macroContainer[0].Id);
     }

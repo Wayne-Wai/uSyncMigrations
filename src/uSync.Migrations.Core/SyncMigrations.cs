@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace uSync.Migrations.Core;
+﻿namespace uSync.Migrations.Core;
 
 public static class SyncMigrations
 {

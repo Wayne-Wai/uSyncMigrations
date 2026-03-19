@@ -3,7 +3,6 @@ using Umbraco.Cms.Core.PropertyEditors.ValueConverters;
 using Umbraco.Cms.Core.Services;
 
 using uSync.Core.Extensions;
-using uSync.Migrations.Migrators.Grid.Helpers;
 using uSync.Migrations.Migrators.Grid.Models;
 
 namespace uSync.Migrations.Migrators.Grid.Content.BlockMigrators;
@@ -22,7 +21,8 @@ internal class MediaBlockMigrator(IMediaService mediaService) : SyncBlockMigrato
 
         Guid mediaKeyGuid = Guid.Empty;
 
-        if (value.ContainsKey("udi")) {
+        if (value.ContainsKey("udi"))
+        {
             var udiValue = value.GetPropertyAsString("udi");
             if (UdiParser.TryParse(udiValue, out Udi? udi) && udi is GuidUdi guidUdi)
             {
@@ -37,13 +37,13 @@ internal class MediaBlockMigrator(IMediaService mediaService) : SyncBlockMigrato
                 var mediaItem = mediaService.GetById(id);
                 if (mediaItem != null)
                     mediaKeyGuid = mediaItem.Key;
-            }                           
+            }
         }
 
         List<MediaWithCrops> media = [new MediaWithCrops
         {
            Key = Guid.NewGuid(),
-           MediaKey = mediaKeyGuid 
+           MediaKey = mediaKeyGuid
         }];
 
         return new Dictionary<string, object>

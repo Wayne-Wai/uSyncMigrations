@@ -1,13 +1,5 @@
 ﻿using HtmlAgilityPack;
 
-using Markdig.Syntax;
-
-using OpenIddict.Client.AspNetCore;
-
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.Blocks;
@@ -96,7 +88,7 @@ internal class MacroToBlockRteMigrator : SyncValueMapperBase, ISyncMapper
             foreach (var attribute in macroNode.Attributes)
             {
                 if (attribute.Name.StartsWith("macroAlias", StringComparison.InvariantCultureIgnoreCase))
-                    continue; 
+                    continue;
 
                 blockItem.Values.Add(new BlockPropertyValue
                 {
@@ -129,16 +121,16 @@ internal class MacroToBlockRteMigrator : SyncValueMapperBase, ISyncMapper
             { "Umbraco.RichText",
                 blockItemDatas.Select(x => new RichTextBlockLayoutItem
                 {
-                    ContentKey = x.Key                   
+                    ContentKey = x.Key
                 })
             }
         };
-       
+
     }
 
     private Task<IContentType?> GetMacroContentType(string contentTypeAlias)
         => Task.FromResult(_contentTypeService.Get(contentTypeAlias));
 
     private List<BlockItemVariation> GenerateExposeList(IEnumerable<BlockItemData> contentData)
-        => [..contentData.Select(x => new BlockItemVariation(x.Key, null, null))];
+        => [.. contentData.Select(x => new BlockItemVariation(x.Key, null, null))];
 }

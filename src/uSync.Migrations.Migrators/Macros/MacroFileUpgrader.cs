@@ -17,7 +17,7 @@ namespace uSync.Migrations.Migrators.Macros;
 internal class MacroFileUpgrader : ISyncFileUpgrader
 {
     private const string _macroContainerName = "Macros";
-    
+
     private readonly IShortStringHelper _shortStringHelper;
 
     public MacroFileUpgrader(IShortStringHelper shortStringHelper)
@@ -38,7 +38,7 @@ internal class MacroFileUpgrader : ISyncFileUpgrader
 
         foreach (var propertyNode in file.Node.Element("Properties")?.Elements("Property") ?? [])
         {
-            var propertyAlias = propertyNode.Element("Alias").ValueOrDefault<string?>(null) ;
+            var propertyAlias = propertyNode.Element("Alias").ValueOrDefault<string?>(null);
             var editorAlias = propertyNode.Element("EditorAlias").ValueOrDefault<string?>(null);
             if (propertyAlias is null || editorAlias is null) continue;
 

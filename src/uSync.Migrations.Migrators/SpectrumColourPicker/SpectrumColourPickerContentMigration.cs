@@ -9,7 +9,7 @@ namespace uSync.Migrations.Migrators.SpectrumColourPicker;
 /// </summary>
 public class SpectrumColourPickerContentMigration : SyncValueMapperBase, ISyncMapper
 {
-    public SpectrumColourPickerContentMigration(IEntityService entityService) 
+    public SpectrumColourPickerContentMigration(IEntityService entityService)
         : base(entityService)
     { }
 

@@ -32,7 +32,7 @@ public abstract class SyncConfigurationMigratorBase : ConfigurationSerializerBas
 
     public string? GetEditorAlias() => TargetEditor;
 
-    public override Task<IDictionary<string, object>> GetConfigurationImportAsync(string name, IDictionary<string, object> configuration)    
+    public override Task<IDictionary<string, object>> GetConfigurationImportAsync(string name, IDictionary<string, object> configuration)
         => GetMigratedConfigurationAsync(name, configuration);
 
 }

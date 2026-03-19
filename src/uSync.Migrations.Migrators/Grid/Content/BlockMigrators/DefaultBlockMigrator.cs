@@ -11,7 +11,7 @@ internal class DefaultBlockMigrator : SyncBlockMigratorBase, ISyncBlockMigrator
 
     public Dictionary<string, object> GetPropertyValues(GridValue.GridControl control)
     {
-        var value = control.Value?.GetValueKind() == JsonValueKind.String    
+        var value = control.Value?.GetValueKind() == JsonValueKind.String
             ? control.Value.ToString()
             : control.Value?.SerializeJsonString(true);
 

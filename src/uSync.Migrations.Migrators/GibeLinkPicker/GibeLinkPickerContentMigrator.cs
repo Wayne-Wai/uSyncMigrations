@@ -56,7 +56,7 @@ internal class GibeLinkPickerContentMigrator : SyncValueMapperBase, ISyncMapper
 
         if (contentValue.StartsWith('['))
             return contentValue.DeserializeJson<IEnumerable<GibeLinkPickerData>>() ?? [];
-        
+
         if (contentValue.TryDeserialize<GibeLinkPickerData>(out var singleLink) && singleLink is not null)
             return [singleLink];
 

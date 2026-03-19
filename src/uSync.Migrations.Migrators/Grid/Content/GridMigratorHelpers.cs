@@ -26,7 +26,7 @@ internal static class GridMigratorHelpers
             RowSpan = 1
         };
 
-    public static BlockGridLayoutItem CreateBlockLayoutItem(Guid contentKey, Guid? settingsKey, IEnumerable<BlockGridLayoutAreaItem> areas, int columnSpan)   
+    public static BlockGridLayoutItem CreateBlockLayoutItem(Guid contentKey, Guid? settingsKey, IEnumerable<BlockGridLayoutAreaItem> areas, int columnSpan)
         => new()
         {
             ContentKey = contentKey,

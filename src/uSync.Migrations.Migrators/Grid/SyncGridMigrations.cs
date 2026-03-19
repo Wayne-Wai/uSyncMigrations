@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace uSync.Migrations.Migrators.Grid;
+﻿namespace uSync.Migrations.Migrators.Grid;
 
 internal static class SyncGridMigrations
 {
@@ -18,7 +14,8 @@ internal static class SyncGridMigrations
 
     public const string DefaultMigratorType = "__default__";
 
-    public static class ApplyTo {
+    public static class ApplyTo
+    {
         public const string ApplyToAll = "All";
         public const string ApplyToRow = "Rows";
         public const string ApplyToArea = "Areas";

@@ -3,7 +3,6 @@
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Extensions;
 
-using uSync.Migrations.Core.Upgrade;
 using uSync.Migrations.Migrators.Grid.Models;
 
 namespace uSync.Migrations.Migrators.Grid.Config.Migrators;
@@ -39,7 +38,7 @@ public class GridSettingsViewMigratorCollection
     public IGridSettingsViewMigrator? GetMigratorOrDefault(string? alias)
     {
         if (alias == null) return null;
-        return this.FirstOrDefault(x => x.ViewAlias.InvariantEquals(alias)) 
+        return this.FirstOrDefault(x => x.ViewAlias.InvariantEquals(alias))
             ?? this.FirstOrDefault(x => x.ViewAlias.InvariantEquals("__default__"));
     }
 

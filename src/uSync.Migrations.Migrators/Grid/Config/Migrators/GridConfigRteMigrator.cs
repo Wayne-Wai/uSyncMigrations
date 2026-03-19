@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection.Metadata;
-using System.Text;
-
-namespace uSync.Migrations.Migrators.Grid.Config.Migrators;
+﻿namespace uSync.Migrations.Migrators.Grid.Config.Migrators;
 
 internal class GridConfigRteMigrator : GridSettingsViewMigratorBase, IGridSettingsViewMigrator
 {
@@ -13,7 +8,7 @@ internal class GridConfigRteMigrator : GridSettingsViewMigratorBase, IGridSettin
         => "Richtext editor";
 }
 
-internal class GridConfigMediaMigrator : GridSettingsViewMigratorBase, IGridSettingsViewMigrator  
+internal class GridConfigMediaMigrator : GridSettingsViewMigratorBase, IGridSettingsViewMigrator
 {
     public string ViewAlias => "media";
     public string GetDataTypeAlias(string gridAlias, string? configItemLabel)

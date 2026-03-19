@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace uSync.Migrations.Core.Upgrade;
 
@@ -24,7 +21,7 @@ public interface ISyncUpgradeService
     ///  fetches the latest legacy folder from disk. will return false if no legacy folder is found, 
     ///  or if the folder is not compatible with the upgrade process.
     /// </summary>
-    bool TryGetLatestLegacyFolder([NotNullWhen(true)]out string? folderPath);
+    bool TryGetLatestLegacyFolder([NotNullWhen(true)] out string? folderPath);
 
 
     /// <summary>

@@ -14,7 +14,7 @@ public static class SystemTextJsonExtensions
     public static IDictionary<string, object>? ConvertToDictionary<TObject>(this TObject obj)
         => obj?.SerializeJsonString().DeserializeJson<Dictionary<string, object>>() ?? [];
 
-    public static bool TryGetValueAsObject<TObject>(this IDictionary<string, object> dictionary, string key, 
+    public static bool TryGetValueAsObject<TObject>(this IDictionary<string, object> dictionary, string key,
         [NotNullWhen(true)] out TObject? result)
     {
         result = default;

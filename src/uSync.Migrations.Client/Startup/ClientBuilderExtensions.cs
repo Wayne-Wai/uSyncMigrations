@@ -1,10 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 
-using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Infrastructure.Manifest;
-
-using uSync.Migrations.Core;
 
 namespace uSync.Migrations.Client.Startup;
 

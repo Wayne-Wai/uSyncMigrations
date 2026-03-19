@@ -30,5 +30,5 @@ internal class uSyncMigrationsManifestReader : IPackageManifestReader
             }
         ]);
     }
-                
+
 }

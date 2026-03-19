@@ -68,14 +68,14 @@ public class SyncBlockMigratorCollection
 
         var migrators = new List<ISyncBlockMigrator>();
         var viewName = Path.GetFileNameWithoutExtension(editor.View);
-            migrators.AddRange(GetMigrators(viewName));
+        migrators.AddRange(GetMigrators(viewName));
 
         migrators.AddRange(GetMigrators(editor.Alias));
 
         if (migrators.Count == 0)
             return GetDefaultMigrators();
         return
-            migrators;        
+            migrators;
     }
 }
 

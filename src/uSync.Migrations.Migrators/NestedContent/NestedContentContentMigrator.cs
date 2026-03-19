@@ -66,7 +66,7 @@ internal class NestedContentContentMigrator : SyncValueMapperBase, ISyncMapper
                 Key = item.TryGetValue("key", out var key) && Guid.TryParse(key?.ToString(), out var keyGuid) ? keyGuid : Guid.NewGuid(),
             };
 
-            foreach(var propertyValue in item.Keys)
+            foreach (var propertyValue in item.Keys)
             {
                 if (_reservedProperties.Contains(propertyValue)) continue;
                 blockItemData.Values.Add(new BlockPropertyValue
@@ -111,5 +111,5 @@ internal class NestedContentContentMigrator : SyncValueMapperBase, ISyncMapper
             // fall back to returning the original value.
             return false;
         }
-    }   
+    }
 }

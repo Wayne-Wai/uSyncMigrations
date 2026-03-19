@@ -60,12 +60,12 @@ public class uSyncMigrationsClientApiController : uSyncMigrationsClientApiContro
     {
         if (_upgradeService.TryGetLatestLegacyFolder(out var legacyFolder) is false)
             return BadRequest("No legacy folder found to ignore");
-        
+
         var result = await _upgradeService.IgnoreLegacyFolderAsync(legacyFolder,
             "This folder has been marked to be ignored by uSync for upgrades.");
 
-        return result 
-            ? Ok() 
+        return result
+            ? Ok()
             : StatusCode(StatusCodes.Status500InternalServerError);
     }
 

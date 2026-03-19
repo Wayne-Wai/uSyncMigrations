@@ -32,7 +32,8 @@ public class UmbBlockGridTypeModel : IBlockConfiguration
     public Guid? GroupKey { get; set; }
 }
 
-public class UmbBlockGridTypeColumnSpanOptions { 
+public class UmbBlockGridTypeColumnSpanOptions
+{
     public required string ColumnSpan { get; set; }
 }
 

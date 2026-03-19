@@ -13,5 +13,5 @@ internal class MegaNavConfigSerializer : SyncConfigurationMigratorBase, IConfigu
 
     public override Task<IDictionary<string, object>> GetMigratedConfigurationAsync(string name, IDictionary<string, object> configuration)
         => Task.FromResult(configuration);
-    
+
 }

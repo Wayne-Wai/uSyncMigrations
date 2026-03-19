@@ -1,9 +1,4 @@
-﻿using Json.More;
-
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json.Nodes;
+﻿using System.Text.Json.Nodes;
 
 using Umbraco.Extensions;
 
@@ -33,7 +28,7 @@ internal class GridConfigurationItems
     public List<GridLayout>? Layouts { get; set; }
 }
 
-public class GridConfigurationConfig 
+public class GridConfigurationConfig
 {
     public string? Label { get; set; }
     public string? Description { get; set; }
@@ -80,7 +75,7 @@ public class GridConfigurationConfig
 public class GridSettingsConfigurationItemPreValue
 {
     public string? Label { get; set; }
-    public string? Value { get; set; }  
+    public string? Value { get; set; }
 }
 
 

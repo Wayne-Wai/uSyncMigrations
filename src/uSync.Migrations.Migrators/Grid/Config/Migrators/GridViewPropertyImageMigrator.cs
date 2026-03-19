@@ -1,8 +1,6 @@
-﻿using Umbraco.Cms.Core;
+﻿namespace uSync.Migrations.Migrators.Grid.Config.Migrators;
 
-namespace uSync.Migrations.Migrators.Grid.Config.Migrators;
-
-public class GridViewPropertyImageMigrator: GridSettingsViewMigratorBase, IGridSettingsViewMigrator
+public class GridViewPropertyImageMigrator : GridSettingsViewMigratorBase, IGridSettingsViewMigrator
 {
     public string ViewAlias => "ImagePicker";
     public string GetDataTypeAlias(string gridAlias, string? configItemLabel) =>

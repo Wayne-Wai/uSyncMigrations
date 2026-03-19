@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace uSync.Migrations.Migrators.NuPickers.Configuration;
+﻿namespace uSync.Migrations.Migrators.NuPickers.Configuration;
 
 internal class NuPickerMigrationOptions
 {
