@@ -72,7 +72,7 @@ internal class SyncUpgradeService : ISyncUpgradeService
     }
 
     /// <inheritdoc/>
-    public async Task<bool> UpgradeFolderAsync(string folderPath, string targetFolder)
+    public async Task<List<SyncUpgradeMessage>> UpgradeFolderAsync(string folderPath, string targetFolder)
     {
         // move the current one out of the way. 
         BackupAndClearLatest();
@@ -81,6 +81,8 @@ internal class SyncUpgradeService : ISyncUpgradeService
 
         var absPath = _syncFileService.GetAbsPath(folderPath);
         var absTarget = _syncFileService.GetAbsPath(targetFolder);
+
+        var messages = new List<SyncUpgradeMessage>();
 
         foreach (var folder in _syncFileService.GetDirectories(folderPath))
         {
@@ -99,21 +101,31 @@ internal class SyncUpgradeService : ISyncUpgradeService
                 {
                     foreach (var upgrader in upgraders)
                     {
-                        var targetFiles = await upgrader.UpgradeFilesAsync(sourceFile);
-                        await SaveUpgradedFilesAsync(absTarget, targetFiles);
+                        var result = await upgrader.UpgradeFilesAsync(sourceFile);
+                        if (result.Success)
+                            await SaveUpgradedFilesAsync(absTarget, result.Files);
+
+                        messages.AddRange(result.Messages);
                     }
                 }
                 else
                 {
                     // copy to target. 
                     await SaveUpgradedFileAsync(absTarget, sourceFile);
+                    //messages.Add(new SyncUpgradeMessage
+                    //{
+                    //    Status = SyncUpgradeStatus.Success,
+                    //    Upgrader = "File Copy",
+                    //    FileName = relativePath,
+                    //    Message = "No upgrader found for this file, so it has been copied to the new location without changes."
+                    //});
                 }
             }
         }
 
-        await UpgradeConfigFolder(absPath, absTarget);
+        messages.AddRange(await UpgradeConfigFolder(absPath, absTarget));
 
-        return true;
+        return messages;
     }
 
     /// <summary>
@@ -124,12 +136,23 @@ internal class SyncUpgradeService : ISyncUpgradeService
     ///  typically the grid upgraders use this to make new content and doctypes 
     ///  for the given values in the grid config files. 
     /// </remarks>
-    private async Task UpgradeConfigFolder(string folderPath, string targetPath)
+    private async Task<List<SyncUpgradeMessage>> UpgradeConfigFolder(string folderPath, string targetPath)
     {
         var configFolder = Path.Combine(folderPath, "config");
 
+        var messages = new List<SyncUpgradeMessage>();
+
         if (_syncFileService.DirectoryExists(configFolder) is false)
-            return;
+        {
+            messages.Add(new SyncUpgradeMessage
+            {
+                Status = SyncUpgradeStatus.Warning,
+                Upgrader = "Config Folder",
+                FileName = "config",
+                Message = "No config folder found, if you are migrating grid based config, there will likely be gaps in the migration without the config files."
+            });
+            return messages;
+        }
 
         foreach (var file in _syncFileService.GetFiles(configFolder, "*.*"))
         {
@@ -141,17 +164,22 @@ internal class SyncUpgradeService : ISyncUpgradeService
             {
                 foreach (var upgrader in upgraders)
                 {
-                    var targetFiles = await upgrader.UpgradeFilesAsync(new SyncUpgradeFile
+                    var result = await upgrader.UpgradeFilesAsync(new SyncUpgradeFile
                     {
                         Filename = filename,
                         Node = new System.Xml.Linq.XElement("Blank"),
                         Content = await _syncFileService.LoadContentAsync(file)
                     });
 
-                    await SaveUpgradedFilesAsync(targetPath, targetFiles);
+                    if (result.Success)
+                        await SaveUpgradedFilesAsync(targetPath, result.Files);
+
+                    messages.AddRange(result.Messages);
                 }
             }
         }
+
+        return messages;
     }
 
     private async Task<SyncUpgradeFile?> LoadFile(string filename, string filePath)
@@ -200,4 +228,83 @@ internal class SyncUpgradeService : ISyncUpgradeService
 
     public string LatestFolder => $"~/uSync/v{_majorVersion}";
     public string LatestVersion => _majorVersion.ToString();
+
+
+    public async Task<IEnumerable<SyncUpgradeMessage>> AnalyseFolderAsync(string folderPath)
+    {
+        List<SyncUpgradeMessage> messages = [];
+        var absPath = _syncFileService.GetAbsPath(folderPath);
+        foreach (var folder in _syncFileService.GetDirectories(folderPath))
+        {
+            foreach (var file in _syncFileService.GetFiles(folder, "*.config"))
+            {
+                var relativePath = file.Replace(absPath, string.Empty).TrimStart(Path.DirectorySeparatorChar);
+                var sourceFile = await LoadFile(relativePath, file);
+                if (sourceFile is null)
+                {
+                    messages.Add(new SyncUpgradeMessage
+                    {
+                        Status = SyncUpgradeStatus.Error,
+                        Upgrader = "File Load",
+                        FileName = relativePath,
+                        Message = "Failed to load file for analysis"
+                    });
+                    continue;
+                };
+
+                var itemType = sourceFile.Node.Name.LocalName;
+                var upgraders = _fileUpgraders.GetUpgraders(itemType);
+                if (upgraders?.Length > 0)
+                {
+                    foreach (var upgrader in upgraders)
+                    {
+                        messages.AddRange(await upgrader.AnalyseFilesAsync(sourceFile));
+                    }
+                }
+            }
+        }
+
+        messages.AddRange(await AnalyseConfigFolderAsync(folderPath));
+
+        return messages;
+    }
+
+    public async Task<IEnumerable<SyncUpgradeMessage>> AnalyseConfigFolderAsync(string folderPath)
+    {
+        List<SyncUpgradeMessage> messages = [];
+        var absPath = _syncFileService.GetAbsPath(folderPath);
+        var configFolder = Path.Combine(absPath, "config");
+        if (_syncFileService.DirectoryExists(configFolder) is false
+            || _syncFileService.FileExists(Path.Combine(configFolder, "grid.editors.config.js")) is false)
+        {
+            return [
+                new SyncUpgradeMessage {
+                    Status = SyncUpgradeStatus.Warning,
+                    Upgrader = "Config Folder",
+                    FileName = "config/grid.editors.config.js",
+                    Message = "No config folder found, if you are migrating grid based config, there will likely be gaps in the migration without the config files."
+                }];
+        }
+
+
+        foreach (var file in _syncFileService.GetFiles(configFolder, "*.*"))
+        {
+            var relativePath = file.Replace(absPath, string.Empty).TrimStart(Path.DirectorySeparatorChar);
+            var filename = Path.GetFileName(relativePath);
+            var upgraders = _fileUpgraders.GetUpgraders(filename);
+            if (upgraders?.Length > 0)
+            {
+                foreach (var upgrader in upgraders)
+                {
+                    messages.AddRange(await upgrader.AnalyseFilesAsync(new SyncUpgradeFile
+                    {
+                        Filename = filename,
+                        Node = new System.Xml.Linq.XElement("Blank"),
+                        Content = await _syncFileService.LoadContentAsync(file)
+                    }));
+                }
+            }
+        }
+        return messages;
+    }
 }

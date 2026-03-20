@@ -12,6 +12,38 @@ export type SyncUpgradeCheckResponse = {
     latestVersion: string;
 };
 
+export type SyncUpgradeMessage = {
+    status: SyncUpgradeStatus;
+    upgrader: string;
+    fileName: string;
+    message?: string | null;
+};
+
+export type SyncUpgradeStatus = 'Info' | 'Success' | 'Warning' | 'Error';
+
+export type AnalyzeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/umbraco/usync-migrations/api/v1/analyze';
+};
+
+export type AnalyzeErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+};
+
+export type AnalyzeResponses = {
+    /**
+     * OK
+     */
+    200: Array<SyncUpgradeMessage>;
+};
+
+export type AnalyzeResponse = AnalyzeResponses[keyof AnalyzeResponses];
+
 export type CheckData = {
     body?: never;
     path?: never;
@@ -56,6 +88,29 @@ export type IgnoreResponses = {
     200: unknown;
 };
 
+export type ImportData = {
+    body?: never;
+    path?: never;
+    query?: {
+        clientId?: string;
+    };
+    url: '/umbraco/usync-migrations/api/v1/import';
+};
+
+export type ImportErrors = {
+    /**
+     * The resource is protected and requires an authentication token
+     */
+    401: unknown;
+};
+
+export type ImportResponses = {
+    /**
+     * OK
+     */
+    200: unknown;
+};
+
 export type UpgradeData = {
     body?: never;
     path?: never;
@@ -74,5 +129,7 @@ export type UpgradeResponses = {
     /**
      * OK
      */
-    200: unknown;
+    200: Array<SyncUpgradeMessage>;
 };
+
+export type UpgradeResponse = UpgradeResponses[keyof UpgradeResponses];

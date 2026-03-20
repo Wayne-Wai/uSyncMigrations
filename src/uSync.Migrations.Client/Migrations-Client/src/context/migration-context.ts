@@ -30,7 +30,26 @@ export class SyncMigrationContext extends UmbContextBase {
   }
 
   async upgrade() {
-    await tryExecute(this, MigrationsService.upgrade());
+    return (await tryExecute(this, MigrationsService.upgrade())).data ?? [];
+  }
+
+  async analyse() {
+    return (await tryExecute(this, MigrationsService.analyze())).data ?? [];
+  }
+
+  async import(clientId?: string | null) {
+    return (
+      (
+        await tryExecute(
+          this,
+          MigrationsService.import({
+            query: {
+              clientId: clientId ?? undefined,
+            },
+          }),
+        )
+      ).data ?? []
+    );
   }
 }
 

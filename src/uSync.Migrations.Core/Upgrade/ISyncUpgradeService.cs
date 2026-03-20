@@ -15,7 +15,7 @@ public interface ISyncUpgradeService
     /// </summary>
     /// <param name="folderPath"></param>
     /// <returns></returns>
-    Task<bool> UpgradeFolderAsync(string folderPath, string targetFolder);
+    Task<List<SyncUpgradeMessage>> UpgradeFolderAsync(string folderPath, string targetFolder);
 
     /// <summary>
     ///  fetches the latest legacy folder from disk. will return false if no legacy folder is found, 
@@ -28,4 +28,5 @@ public interface ISyncUpgradeService
     ///  mark a folder to be ignored. 
     /// </summary>
     Task<bool> IgnoreLegacyFolderAsync(string folderPath, string message);
+    Task<IEnumerable<SyncUpgradeMessage>> AnalyseFolderAsync(string folderPath);
 }

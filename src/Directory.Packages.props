@@ -19,9 +19,9 @@
   </ItemGroup>
   <!-- uSync -->
   <ItemGroup>
-    <PackageVersion Include="uSync" Version="17.1.0-build.20260316.2" />
-    <PackageVersion Include="uSync.BackOffice" Version="17.1.0-build.20260316.2" />
-    <PackageVersion Include="uSync.Core" Version="17.1.0-build.20260316.2" />
+    <PackageVersion Include="uSync" Version="17.1.0-build.20260320.11" />
+    <PackageVersion Include="uSync.BackOffice" Version="17.1.0-build.20260320.11" />
+    <PackageVersion Include="uSync.Core" Version="17.1.0-build.20260320.11" />
   </ItemGroup>
   <!-- source link -->
   <ItemGroup>

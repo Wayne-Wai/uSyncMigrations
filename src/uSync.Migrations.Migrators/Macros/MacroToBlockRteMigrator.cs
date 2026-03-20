@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 
 using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.Blocks;
 using Umbraco.Cms.Core.Services;
@@ -14,6 +15,7 @@ namespace uSync.Migrations.Migrators.Macros;
 ///  finds macros in RTE blocks and upgrades them to content blocks, 
 ///  (assumes the macros have already been upgraded to content types by the MacroFileUpgrader)
 /// </summary>
+[Weight(200)]
 internal class MacroToBlockRteMigrator : SyncValueMapperBase, ISyncMapper
 {
     private readonly IContentTypeService _contentTypeService;

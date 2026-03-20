@@ -11,7 +11,7 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: true,
     rollupOptions: {
-      external: [/^@umbraco/],
+      external: [/^@umbraco/, /^@jumoo\/usync/], // Exclude Umbraco and uSync dependencies from the bundle
     },
   },
 });

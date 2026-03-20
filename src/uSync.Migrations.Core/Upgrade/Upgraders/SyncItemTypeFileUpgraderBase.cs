@@ -29,13 +29,23 @@ public abstract class SyncItemTypeFileUpgraderBase
     ///  upgrade the file. it is possible here that we want to return multiple 
     ///  files, because we might need to create new things as part of the upgrade. 
     /// </summary>
-    public async Task<IEnumerable<SyncUpgradeFile>> UpgradeFilesAsync(SyncUpgradeFile file)
+    public async Task<SyncUpgradeResult> UpgradeFilesAsync(SyncUpgradeFile file)
     {
+        var result = new SyncUpgradeResult(true);
+
         var itemKey = GetItemKey(file.Node);
-        if (string.IsNullOrWhiteSpace(itemKey)) return [file];
+        if (string.IsNullOrWhiteSpace(itemKey))
+        {
+            result.Files = [file];
+            return result;
+        }
 
         var upgraders = _fileUpgraders.GetUpgraders($"{ItemType}:{itemKey}");
-        if (upgraders is null) return [file];
+        if (upgraders is null)
+        {
+            result.Files = [file];
+            return result;
+        }
 
         var orginalFilePath = file.Filename;
         var files = new Dictionary<string, SyncUpgradeFile>()
@@ -45,16 +55,37 @@ public abstract class SyncItemTypeFileUpgraderBase
 
         foreach (var upgrader in upgraders)
         {
+            var upgradeResult = await upgrader.UpgradeFilesAsync(files[orginalFilePath]);
+            result.Messages.AddRange(upgradeResult.Messages);
+
             // loop through the upgraders, but always pass the latest version of the node
             // that way updates from one version will aways pass down.
-            foreach (var update in await upgrader.UpgradeFilesAsync(files[orginalFilePath]))
+            foreach (var update in upgradeResult.Files)
             {
                 files[update.Filename] = update;
             }
         }
 
-        return files.Values;
+        result.Files = [..files.Values];
+
+        return result;
     }
 
+    public virtual async Task<IEnumerable<SyncUpgradeMessage>> AnalyseFilesAsync(SyncUpgradeFile file)
+    {
+        var itemKey = GetItemKey(file.Node);
+        if (string.IsNullOrWhiteSpace(itemKey)) return [];
+
+        var upgraders = _fileUpgraders.GetUpgraders($"{ItemType}:{itemKey}");
+        if (upgraders is null) return [];
+
+        var messages = new List<SyncUpgradeMessage>();
+
+        foreach (var upgrader in upgraders)
+        {
+            messages.AddRange(await upgrader.AnalyseFilesAsync(file));           
+        }
+        return messages;
+    }
 
 }

@@ -53,7 +53,7 @@ public static class SyncMigrationContentTypeHelper
         {
             properties.Add(
                 new XElement("GenericProperty",
-                    new XElement("Key", $"{alias}{dataType.Alias}".ToGuid()),
+                    new XElement("Key", $"{alias}{dataType.Alias}{dataType.Name}".ToGuid()),
                     new XElement("Name", dataType.Name),
                     new XElement("Alias", dataType.PropertyAlias),
                     new XElement("Definition", dataType.Definition),

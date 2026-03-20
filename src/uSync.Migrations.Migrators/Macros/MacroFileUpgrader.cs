@@ -27,13 +27,27 @@ internal class MacroFileUpgrader : ISyncFileUpgrader
 
     public string ItemType => "Macro";
 
-    public async Task<IEnumerable<SyncUpgradeFile>> UpgradeFilesAsync(SyncUpgradeFile file)
+    public Task<IEnumerable<SyncUpgradeMessage>> AnalyseFilesAsync(SyncUpgradeFile file)
+    {
+        return Task.FromResult<IEnumerable<SyncUpgradeMessage>>([
+            new SyncUpgradeMessage
+            {
+                Status = SyncUpgradeStatus.Info,
+                Upgrader = nameof(MacroFileUpgrader),
+                FileName = file.Filename,
+                Message = $"Macro {file.Node.GetAlias()} will be created as a content type for block level usage."
+            }
+        ]);
+    }
+
+    public async Task<SyncUpgradeResult> UpgradeFilesAsync(SyncUpgradeFile file)
     {
         var alias = file.Node.GetAlias();
         var key = file.Node.GetKey();
         var name = file.Node.Element("Name").ValueOrDefault<string?>(alias);
 
-        List<SyncUpgradeFile> files = [];
+        var result = new SyncUpgradeResult(true);
+
         List<SyncDataTypeInfo> dataTypes = [];
 
         foreach (var propertyNode in file.Node.Element("Properties")?.Elements("Property") ?? [])
@@ -45,8 +59,8 @@ internal class MacroFileUpgrader : ISyncFileUpgrader
             var propertyName = propertyNode.Element("Name").ValueOrDefault<string>(alias);
 
             var dataTypeFile = CreateDataTypeForProperty(propertyName, editorAlias);
-            files.Add(dataTypeFile);
-
+            result.Files.Add(dataTypeFile);
+      
             dataTypes.Add(new SyncDataTypeInfo(
                 Name: propertyName,
                 Alias: editorAlias,
@@ -55,8 +69,14 @@ internal class MacroFileUpgrader : ISyncFileUpgrader
                 PropertyAlias: propertyAlias));
         }
 
+        result.Messages.Add(SyncUpgradeMessage.Create(
+            SyncUpgradeStatus.Info,
+            nameof(MacroFileUpgrader),
+            file.Filename,
+            $"Creating content type for macro {alias} with {dataTypes.Count} parameters"));
 
-        files.Add(new SyncUpgradeFile
+
+        result.Files.Add(new SyncUpgradeFile
         {
             Filename = Path.Combine("ContentTypes\\Macros", $"{alias}_macro_contenttype.config"),
             Node = SyncMigrationContentTypeHelper.CreateContentType(
@@ -70,7 +90,7 @@ internal class MacroFileUpgrader : ISyncFileUpgrader
                 dataTypes: [.. dataTypes])
         });
 
-        return files;
+        return result;
     }
 
 

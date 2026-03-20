@@ -35,11 +35,12 @@ internal class GridEditorsConfigFileUpgrader : GridFileUpgraderBase, ISyncFileUp
         _settingsMigrators = settingsMigrators;
     }
 
-    public async Task<IEnumerable<SyncUpgradeFile>> UpgradeFilesAsync(SyncUpgradeFile file)
+    public async Task<SyncUpgradeResult> UpgradeFilesAsync(SyncUpgradeFile file)
     {
-        if (file.Content.TryDeserialize<GridEditor[]>(out var config) is false || config is null) return [];
+        var result = new SyncUpgradeResult(true);
 
-        var newContentTypes = new List<SyncUpgradeFile>();
+        if (file.Content.TryDeserialize<GridEditor[]>(out var config) is false || config is null)
+            return result;
 
         foreach (var editor in config)
         {
@@ -68,13 +69,21 @@ internal class GridEditorsConfigFileUpgrader : GridFileUpgraderBase, ISyncFileUp
             }
             else
             {
+                result.Messages.Add(new SyncUpgradeMessage
+                {
+                    FileName = file.Filename,
+                    Upgrader = nameof(GridEditorsConfigFileUpgrader),
+                    Status = SyncUpgradeStatus.Info,
+                    Message = $"Creating data type for grid editor '{editor.Name}' with alias '{dataTypeAlias}' and editor view '{editor.View}'"
+                });
+
                 // create a new datatype for the value we will use in the 'grid element' content type.
                 var upgradeFile = new SyncUpgradeFile
                 {
                     Filename = Path.Combine(SyncGridMigrations.DataTypeFolder, _gridNameHelper.MakeSafeConfig($"grid_config_{dataTypeAlias}_datatype")),
                     Node = node
                 };
-                newContentTypes.Add(upgradeFile);
+                result.Files.Add(upgradeFile);
 
                 definition = node.GetKey();
                 propertyType = node.Element("Info")?.Element("EditorAlias")?.Value ?? Constants.PropertyEditors.Aliases.Label;
@@ -89,8 +98,16 @@ internal class GridEditorsConfigFileUpgrader : GridFileUpgraderBase, ISyncFileUp
 
             var contentTypeAlias = _gridNameHelper.GetElementContentTypeAlias(editor.Alias);
 
+            result.Messages.Add(new SyncUpgradeMessage
+            {
+                FileName = file.Filename,
+                Upgrader = nameof(GridEditorsConfigFileUpgrader),
+                Status = SyncUpgradeStatus.Info,
+                Message = $"Creating content type for grid editor '{editor.Name}' with alias '{contentTypeAlias}' and data type alias '{dataTypeAlias}' (editor view: '{editor.View}')"
+            });
+
             // create the content type 'element' that will be used in the block grid to represent this editor.
-            newContentTypes.Add(new SyncUpgradeFile
+            result.Files.Add(new SyncUpgradeFile
             {
                 Filename = Path.Combine(SyncGridMigrations.ContentTypeFolder, _gridNameHelper.MakeSafeConfig($"grid_editor_{editor.Name}")),
                 Node = SyncMigrationContentTypeHelper.CreateContentType(
@@ -104,6 +121,22 @@ internal class GridEditorsConfigFileUpgrader : GridFileUpgraderBase, ISyncFileUp
             });
         }
 
-        return newContentTypes;
+        return result;
+    }
+
+    public Task<IEnumerable<SyncUpgradeMessage>> AnalyseFilesAsync(SyncUpgradeFile file)
+    {
+        var result = new List<SyncUpgradeMessage>()
+        {
+            new SyncUpgradeMessage
+            {
+                FileName = file.Filename,
+                Upgrader = nameof(GridEditorsConfigFileUpgrader),
+                Status = SyncUpgradeStatus.Info,
+                Message = $"Grid Editors Config file is present and will be used to create block level content types for grid migration."
+            }
+        };
+
+        return Task.FromResult(result.AsEnumerable());
     }
 }

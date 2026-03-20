@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CheckData, CheckErrors, CheckResponses, IgnoreData, IgnoreErrors, IgnoreResponses, UpgradeData, UpgradeErrors, UpgradeResponses } from './types.gen';
+import type { AnalyzeData, AnalyzeErrors, AnalyzeResponses, CheckData, CheckErrors, CheckResponses, IgnoreData, IgnoreErrors, IgnoreResponses, ImportData, ImportErrors, ImportResponses, UpgradeData, UpgradeErrors, UpgradeResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -19,6 +19,19 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 export class MigrationsService {
+    public static analyze<ThrowOnError extends boolean = false>(options?: Options<AnalyzeData, ThrowOnError>) {
+        return (options?.client ?? client).post<AnalyzeResponses, AnalyzeErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/usync-migrations/api/v1/analyze',
+            ...options
+        });
+    }
+    
     public static check<ThrowOnError extends boolean = false>(options?: Options<CheckData, ThrowOnError>) {
         return (options?.client ?? client).get<CheckResponses, CheckErrors, ThrowOnError>({
             security: [
@@ -41,6 +54,19 @@ export class MigrationsService {
                 }
             ],
             url: '/umbraco/usync-migrations/api/v1/ignore',
+            ...options
+        });
+    }
+    
+    public static import<ThrowOnError extends boolean = false>(options?: Options<ImportData, ThrowOnError>) {
+        return (options?.client ?? client).post<ImportResponses, ImportErrors, ThrowOnError>({
+            security: [
+                {
+                    scheme: 'bearer',
+                    type: 'http'
+                }
+            ],
+            url: '/umbraco/usync-migrations/api/v1/import',
             ...options
         });
     }

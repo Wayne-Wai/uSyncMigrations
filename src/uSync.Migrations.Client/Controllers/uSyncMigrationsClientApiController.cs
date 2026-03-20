@@ -2,7 +2,12 @@ using Asp.Versioning;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 
+using uSync.BackOffice;
+using uSync.BackOffice.Hubs;
+using uSync.Migrations.Core.Import;
 using uSync.Migrations.Core.Upgrade;
 
 namespace uSync.Migrations.Client.Controllers;
@@ -11,11 +16,22 @@ namespace uSync.Migrations.Client.Controllers;
 [ApiExplorerSettings(GroupName = "Migrations")]
 public class uSyncMigrationsClientApiController : uSyncMigrationsClientApiControllerBase
 {
+    private readonly ILogger<uSyncMigrationsClientApiController> _logger;
     private readonly ISyncUpgradeService _upgradeService;
+    private readonly ISyncMigrationImportService _importService;
 
-    public uSyncMigrationsClientApiController(ISyncUpgradeService upgradeService)
+    private readonly IHubContext<SyncHub> _hubContext;
+
+    public uSyncMigrationsClientApiController(
+        ILogger<uSyncMigrationsClientApiController> logger,
+        ISyncUpgradeService upgradeService,
+        ISyncMigrationImportService importService,
+        IHubContext<SyncHub> hubContext)
     {
+        _logger = logger;
         _upgradeService = upgradeService;
+        _importService = importService;
+        _hubContext = hubContext;
     }
 
     [HttpGet("check")]
@@ -37,21 +53,22 @@ public class uSyncMigrationsClientApiController : uSyncMigrationsClientApiContro
     }
 
     [HttpPost("upgrade")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<List<SyncUpgradeMessage>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> Upgrade()
     {
-        if (_upgradeService.TryGetLatestLegacyFolder(out var legacyFolder) is false)
-            return BadRequest("No legacy folder found to upgrade");
-
-        var result = await _upgradeService.UpgradeFolderAsync(legacyFolder, _upgradeService.LatestFolder);
-        if (result)
+        try
         {
-            //await _upgradeService.IgnoreLegacyFolderAsync(legacyFolder,
-            //    "This folder has been upgraded and will be ignored by uSync for upgrades.");
-            return Ok();
-        }
+            if (_upgradeService.TryGetLatestLegacyFolder(out var legacyFolder) is false)
+                return BadRequest("No legacy folder found to upgrade");
 
-        return StatusCode(StatusCodes.Status500InternalServerError);
+            var result = await _upgradeService.UpgradeFolderAsync(legacyFolder, _upgradeService.LatestFolder);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred during the upgrade process.");
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
     }
 
     [HttpPost("ignore")]
@@ -68,6 +85,36 @@ public class uSyncMigrationsClientApiController : uSyncMigrationsClientApiContro
             ? Ok()
             : StatusCode(StatusCodes.Status500InternalServerError);
     }
+
+    [HttpPost("analyze")]
+    [ProducesResponseType<IEnumerable<SyncUpgradeMessage>>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Analyze()
+    {
+        if (_upgradeService.TryGetLatestLegacyFolder(out var legacyFolder) is false)
+            return BadRequest("No legacy folder found to analyze");
+        
+        var result = await _upgradeService.AnalyseFolderAsync(legacyFolder);
+       
+        return Ok(result);
+    }
+
+    [HttpPost("import")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Import(string? clientId)
+    {
+        _importService.ImportInBackground(true, GetCallbacksForClient(clientId));
+        return Ok();
+    }
+
+    private uSyncCallbacks? GetCallbacksForClient(string? clientId)
+    {
+        var hubClient = clientId is null ? null :
+            new HubClientService(_hubContext, clientId);
+
+        return hubClient?.Callbacks() ?? null;
+
+    }
+
 
     public class SyncUpgradeCheckResponse
     {

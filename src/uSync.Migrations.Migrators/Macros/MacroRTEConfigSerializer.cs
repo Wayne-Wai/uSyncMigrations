@@ -1,4 +1,5 @@
 ﻿using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Services;
@@ -13,6 +14,7 @@ namespace uSync.Migrations.Migrators.Macros;
 /// <summary>
 ///  adds any generated Macro Content Types to the list of allowed blocks inside an RTE.
 /// </summary>
+[Weight(200)] // +100, so it happens after the ones in the core usync (which will prep the RTE for tiptap). 
 internal class MacroRTEConfigSerializer : SyncConfigurationMigratorBase, IConfigurationSerializer
 {
     private readonly IContentTypeService _contentTypeService;
@@ -28,7 +30,7 @@ internal class MacroRTEConfigSerializer : SyncConfigurationMigratorBase, IConfig
 
     public string Name => nameof(MacroRTEConfigSerializer);
 
-    public string[] Editors => [Constants.PropertyEditors.Aliases.RichText];
+    public string[] Editors => [Constants.PropertyEditors.Aliases.RichText, "Umbraco.TinyMCE"];
 
     // keep it the same. 
     public override string? TargetEditor => null;
@@ -44,7 +46,7 @@ internal class MacroRTEConfigSerializer : SyncConfigurationMigratorBase, IConfig
                 List<RichTextConfiguration.RichTextBlockConfiguration>>() ?? [];
         }
 
-        if (richTextBlocks.Count == 0)
+        if (richTextBlocks.Count > 0)
             return configuration;
 
         var macroContentTypes = await GetMacroContentTypes();
@@ -62,8 +64,32 @@ internal class MacroRTEConfigSerializer : SyncConfigurationMigratorBase, IConfig
         var updatedConfig = configuration.ToDictionary();
         updatedConfig["blocks"] = richTextBlocks;
 
+        if (richTextBlocks.Count > 0)
+        {
+            if (updatedConfig["extensions"] is string[] extensionArray)
+            {
+                List<string> updatedExtensions = [.. extensionArray, "Umb.Tiptap.Block"];
+                updatedConfig["extensions"] = updatedExtensions;
+            }
+
+            if (updatedConfig["toolbar"] is List<List<List<string>>> toolbar)
+            {
+                var firstToolbar = toolbar.FirstOrDefault()?.FirstOrDefault();
+                if (firstToolbar is not null)
+                {
+                    if (firstToolbar.Count == 0)
+                        firstToolbar.AddRange(_defaultToolbar);
+
+                    firstToolbar.Add("Umb.Tiptap.Toolbar.BlockPicker");
+                }
+            }
+        }
+
         return updatedConfig;
     }
+
+    private static string[] _defaultToolbar = ["sourcecode", "bold", "italic", "underline", "alignleft", "aligncenter", "alignright",
+                          "bullist", "numlist", "outdent", "indent", "link", "umbmediapicker", "umbembeddialog"];
 
     private async Task<IEnumerable<IContentType>> GetMacroContentTypes()
     {
