@@ -8,13 +8,14 @@ using Umbraco.Cms.Core.Models.Blocks;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Extensions;
 
-using uSync.Core;
 using uSync.Core.Extensions;
 using uSync.Core.Mapping;
 using uSync.Migrations.Migrators.Grid.Content.BlockMigrators;
 using uSync.Migrations.Migrators.Grid.Extensions;
 using uSync.Migrations.Migrators.Grid.Helpers;
 using uSync.Migrations.Migrators.Grid.Models;
+
+using static uSync.Migrations.Core.SyncMigrations;
 
 namespace uSync.Migrations.Migrators.Grid.Content;
 

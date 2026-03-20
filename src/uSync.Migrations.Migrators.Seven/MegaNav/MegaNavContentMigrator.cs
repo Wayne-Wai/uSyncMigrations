@@ -33,9 +33,9 @@ internal class MegaNavContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncP
         return Task.FromResult<string?>(entities.SerializeJsonString());
     }
 
-    private IEnumerable<MeganavEntity> ConvertToEntity(JsonArray data)
+    private IEnumerable<MeganavEntity> ConvertToEntity(JsonArray? data)
     {
-        foreach (var item in data.Cast<JsonObject>())
+        foreach (var item in data?.Cast<JsonObject>() ?? [])
         {
             var entity = new MeganavEntity
             {
@@ -95,25 +95,25 @@ internal class MegaNavContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncP
     internal class MeganavEntity
     {
         [DataMember(Name = "title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [DataMember(Name = "url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [DataMember(Name = "target")]
-        public string Target { get; set; }
+        public string? Target { get; set; }
 
         [DataMember(Name = "visible")]
         public bool Visible { get; set; } = true;
 
         [DataMember(Name = "udi")]
-        public GuidUdi Udi { get; set; }
+        public GuidUdi? Udi { get; set; }
 
         [DataMember(Name = "itemTypeId")]
         public Guid? ItemTypeId { get; set; }
 
         [DataMember(Name = "settings")]
-        public IDictionary<string, object> Settings { get; set; }
+        public IDictionary<string, object> Settings { get; set; } = new Dictionary<string, object>();
 
         [DataMember(Name = "children")]
         public IEnumerable<MeganavEntity> Children { get; set; } = new List<MeganavEntity>();

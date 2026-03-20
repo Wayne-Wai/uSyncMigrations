@@ -74,7 +74,7 @@ public class uSyncMigrationsClientApiController : uSyncMigrationsClientApiContro
     [HttpPost("ignore")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Ignore()
-    {
+    {   
         if (_upgradeService.TryGetLatestLegacyFolder(out var legacyFolder) is false)
             return BadRequest("No legacy folder found to ignore");
 

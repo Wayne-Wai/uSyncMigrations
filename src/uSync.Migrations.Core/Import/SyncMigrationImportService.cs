@@ -38,14 +38,20 @@ internal class SyncMigrationImportService : ISyncMigrationImportService
     {
         if (_backgroundTaskQueue == null)
             throw new InvalidOperationException("Background task queue is not available.");
-        _backgroundTaskQueue.QueueBackgroundWorkItem(async cancellationToken =>
+        _backgroundTaskQueue.QueueBackgroundWorkItem(cancellationToken =>
         {
             using (ExecutionContext.SuppressFlow())
             {
-                await Import("settings", force, callbacks);
-                await Import("All", force, callbacks);
+                Task.Run(async () => await RunMigrationImports(force, callbacks), cancellationToken);
+                return Task.CompletedTask;
             }
         });
+    }
+
+    private async Task RunMigrationImports(bool force, uSyncCallbacks? callbacks)
+    {
+        await Import("settings", force, callbacks);
+        await Import("All", force, callbacks);
     }
 
 

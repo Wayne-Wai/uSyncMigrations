@@ -3,9 +3,10 @@
 using Umbraco.Cms.Core.Models.Blocks;
 using Umbraco.Cms.Core.Services;
 
-using uSync.Core;
 using uSync.Core.Extensions;
 using uSync.Core.Mapping;
+
+using static uSync.Migrations.Core.SyncMigrations;
 
 namespace uSync.Migrations.Migrators.NestedContent;
 

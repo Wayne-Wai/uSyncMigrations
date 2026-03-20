@@ -21,7 +21,11 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Build & Pack
-        run: dotnet pack src/uSync.Migrations/uSync.Migrations.csproj -c Release /p:Version=${{github.ref_name}}
+        run: |
+          dotnet pack src/uSync.Migrations/uSync.Migrations.Core.csproj -c Release /p:Version=${{github.ref_name}} \
+          dotnet pack src/uSync.Migrations/uSync.Migrations.Client.csproj -c Release /p:Version=${{github.ref_name}} \
+          dotnet pack src/uSync.Migrations/uSync.Migrations.Migrators.csproj -c Release /p:Version=${{github.ref_name}} \
+          dotnet pack src/uSync.Migrations/uSync.Migrations.csproj -c Release /p:Version=${{github.ref_name}} \
 
       - name: Push to NuGet
         run: dotnet nuget push **/*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
