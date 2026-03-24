@@ -12,7 +12,7 @@ const workspaceView: UmbExtensionManifest = {
   js: () => import("./upgrade-view.element.js"),
   meta: {
     label: "#usyncmigrations_tab",
-    icon: "icon-arrow-up color-green",
+    icon: "icon-paper-plane color-green",
     pathname: "upgrade",
   },
   conditions: [

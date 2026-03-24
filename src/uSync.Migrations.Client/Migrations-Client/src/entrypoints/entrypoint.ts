@@ -7,6 +7,8 @@ import { client } from "../api/client.gen.js";
 
 // load up the manifests here
 export const onInit: UmbEntryPointOnInit = (_host, _extensionRegistry) => {
+  _extensionRegistry.exclude("usync.workspace.legacy");
+
   // Will use only to add in Open API config with generated TS OpenAPI HTTPS Client
   // Do the OAuth token handshake stuff
   _host.consumeContext(UMB_AUTH_CONTEXT, async (authContext) => {
