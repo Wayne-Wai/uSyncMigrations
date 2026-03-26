@@ -1,7 +1,7 @@
 ﻿using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Infrastructure.Scoping;
 
-using uSync.Migrations.Core.Persistance.Cache;
+using uSync.Migrations.Core.Persistence.Cache;
 
 namespace uSync.Migrations.Core.Tracking.Cache;
 

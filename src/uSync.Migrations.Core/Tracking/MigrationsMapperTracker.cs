@@ -20,6 +20,6 @@ public class MigrationsMapperTracker : ISyncMapperTracker
     {
         var trackedItem = await _trackingService.GetAsync(editorAlias);
         if (trackedItem is null) return [];
-        return _syncValueMapperCollection.GetSyncMappers(trackedItem.Orginal);
+        return _syncValueMapperCollection.GetSyncMappers(trackedItem.Original);
     }
 }

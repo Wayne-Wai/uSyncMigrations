@@ -1,6 +1,6 @@
 ﻿using Umbraco.Cms.Core.Scoping;
 
-namespace uSync.Migrations.Core.Persistance;
+namespace uSync.Migrations.Core.Persistence;
 
 internal class SyncDataServiceBase<TModel, TKey> : ISyncDataService<TModel, TKey> 
     where TModel : class, ISyncDataEntity<TKey>
@@ -53,10 +53,10 @@ internal class SyncDataServiceBase<TModel, TKey> : ISyncDataService<TModel, TKey
 
     public virtual async Task DeleteAllAsync()
     {
-        using (var scope = ScopeProvider.CreateCoreScope(autoComplete: true))
-        {
-            await Repository.DeleteAllAsync();
-        }
+        using var scope = ScopeProvider.CreateCoreScope(autoComplete: true);
+        await Repository.DeleteAllAsync();
+        scope.Complete();
+
     }
 
     public virtual async Task<bool> ExistsAsync(TKey key)

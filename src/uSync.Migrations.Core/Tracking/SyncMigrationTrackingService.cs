@@ -1,6 +1,6 @@
 ﻿using Umbraco.Cms.Core.Scoping;
 
-using uSync.Migrations.Core.Persistance;
+using uSync.Migrations.Core.Persistence;
 
 namespace uSync.Migrations.Core.Tracking;
 
@@ -18,15 +18,15 @@ internal class SyncMigrationTrackingService : SyncDataServiceBase<SyncMigratedDa
     public async Task<string> GetOriginalKeyAsync(string key)
     {
         var item = await GetAsync(key);
-        return item?.Orginal ?? key;
+        return item?.Original ?? key;
     }
 
-    public async Task AddRename(string newKey, string oldKey, string? additionalData)
+    public async Task AddRenameAsync(string newKey, string oldKey, string? additionalData)
     {
         var item = new SyncMigratedData
         {
             Key = newKey,
-            Orginal = oldKey,
+            Original = oldKey,
             AdditionalData = additionalData
         };
         await SaveAsync(item);

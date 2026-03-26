@@ -31,6 +31,6 @@ public class MigrationsTrackingConfigSerializer : IConfigurationTrackingSerializ
     ///  fetch any legacy migrators to handle the content changes. 
     /// </summary>
     public async Task TrackRenamedEditorAsync(string oldEditorAlias, string newEditorAlias)
-        => await _trackingService.AddRename(newEditorAlias, oldEditorAlias, null);
+        => await _trackingService.AddRenameAsync(newEditorAlias, oldEditorAlias, null);
     
 }

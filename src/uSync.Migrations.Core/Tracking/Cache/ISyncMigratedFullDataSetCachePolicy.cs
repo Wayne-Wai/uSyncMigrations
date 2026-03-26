@@ -1,4 +1,4 @@
-﻿using uSync.Migrations.Core.Persistance.Cache;
+﻿using uSync.Migrations.Core.Persistence.Cache;
 
 namespace uSync.Migrations.Core.Tracking.Cache;
 

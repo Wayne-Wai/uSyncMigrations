@@ -2,7 +2,7 @@
 
 using Umbraco.Cms.Infrastructure.Persistence.DatabaseAnnotations;
 
-using uSync.Migrations.Core.Persistance;
+using uSync.Migrations.Core.Persistence;
 
 namespace uSync.Migrations.Core.Tracking;
 
@@ -22,7 +22,7 @@ public class SyncMigratedData : ISyncDataEntity<string>
     public required string Key { get; set; }
 
     [Column("Original")]
-    public required string Orginal { get; set; }
+    public required string Original { get; set; }
 
     [Column("Additional")]
     [NullSetting(NullSetting = NullSettings.Null)]

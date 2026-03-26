@@ -1,4 +1,4 @@
-﻿using uSync.Migrations.Core.Persistance;
+﻿using uSync.Migrations.Core.Persistence;
 
 namespace uSync.Migrations.Core.Tracking;
 

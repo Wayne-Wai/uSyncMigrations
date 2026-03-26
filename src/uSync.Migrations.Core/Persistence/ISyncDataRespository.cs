@@ -1,6 +1,6 @@
-﻿namespace uSync.Migrations.Core.Persistance;
+﻿namespace uSync.Migrations.Core.Persistence;
 
-public interface ISyncDataService<TModel, TKey> where TModel : class, ISyncDataEntity<TKey>
+public interface ISyncDataRespository<TModel, TKey> where TModel : class, ISyncDataEntity<TKey>
 {
     Task CreateAsync(TModel item);
     Task DeleteAllAsync();
@@ -8,6 +8,5 @@ public interface ISyncDataService<TModel, TKey> where TModel : class, ISyncDataE
     Task<bool> ExistsAsync(TKey key);
     Task<IEnumerable<TModel>> GetAllAsync(params TKey[] keys);
     Task<TModel?> GetAsync(TKey key);
-    Task SaveAsync(TModel item);
     Task UpdateAsync(TModel item);
 }

@@ -8,9 +8,9 @@ using Umbraco.Cms.Infrastructure.Persistence.SqlSyntax;
 using Umbraco.Cms.Infrastructure.Scoping;
 using Umbraco.Extensions;
 
-using uSync.Migrations.Core.Persistance.Cache;
+using uSync.Migrations.Core.Persistence.Cache;
 
-namespace uSync.Migrations.Core.Persistance;
+namespace uSync.Migrations.Core.Persistence;
 
 /// <summary>
 ///  repository to store some migration info (for when types change from one type to another).

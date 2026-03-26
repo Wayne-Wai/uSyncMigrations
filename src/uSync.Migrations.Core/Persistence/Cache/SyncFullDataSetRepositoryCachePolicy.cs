@@ -5,7 +5,7 @@ using Umbraco.Extensions;
 
 using IScope = Umbraco.Cms.Infrastructure.Scoping.IScope;
 
-namespace uSync.Migrations.Core.Persistance.Cache;
+namespace uSync.Migrations.Core.Persistence.Cache;
 
 /// <summary>
 ///  this is similar to the SyncDataCachePolicy, except everything is cached in one key.
@@ -54,8 +54,11 @@ internal class SyncFullDataSetRepositoryCachePolicy<TModel, TKey>
     }
     private string _dataSetCacheKey => $"{typeof(TModel).FullName}_FullDataSet";
 
-    public void ClearAllAsync()
-        => Cache.ClearByKey(_dataSetCacheKey);
+    public Task ClearAllAsync()
+    {
+        Cache.ClearByKey(_dataSetCacheKey);
+        return Task.CompletedTask;
+    }
 
     public async Task CreateAsync(TModel model, Func<TModel, Task> persistNewAsync, CancellationToken cancellationToken = default)
     {

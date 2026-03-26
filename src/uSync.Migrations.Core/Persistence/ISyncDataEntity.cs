@@ -1,4 +1,4 @@
-﻿namespace uSync.Migrations.Core.Persistance;
+﻿namespace uSync.Migrations.Core.Persistence;
 
 public interface ISyncDataEntity<TId>
 {
