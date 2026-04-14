@@ -8,6 +8,7 @@ using Umbraco.Cms.Core.Services;
 
 using uSync.Core.Extensions;
 using uSync.Core.Mapping;
+using uSync.Core.Serialization;
 
 namespace uSync.Migrations.Migrators.Macros;
 
@@ -33,7 +34,7 @@ internal class MacroToBlockRteMigrator : SyncValueMapperBase, ISyncMapper
         $"{Constants.PropertyEditors.Aliases.Grid}.rte"
     ];
 
-    public override async Task<string?> GetImportValueAsync(string value, string editorAlias)
+    public override async Task<string?> GetImportValueAsync(string value, string editorAlias, SyncSerializerOptions options)
     {
         // it is the responsiblity of the mapper to know if the import has happened before. 
         if (value.Contains("<?UMBRACO_MACRO") is false) return value;
@@ -116,7 +117,7 @@ internal class MacroToBlockRteMigrator : SyncValueMapperBase, ISyncMapper
         return richTextEditorValue.SerializeJsonString();
     }
 
-    private IDictionary<string, IEnumerable<IBlockLayoutItem>> GenerateLayout(List<BlockItemData> blockItemDatas)
+    private static IDictionary<string, IEnumerable<IBlockLayoutItem>> GenerateLayout(List<BlockItemData> blockItemDatas)
     {
         return new Dictionary<string, IEnumerable<IBlockLayoutItem>>
         {

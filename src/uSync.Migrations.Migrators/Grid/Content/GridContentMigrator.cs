@@ -10,6 +10,7 @@ using Umbraco.Extensions;
 
 using uSync.Core.Extensions;
 using uSync.Core.Mapping;
+using uSync.Core.Serialization;
 using uSync.Migrations.Migrators.Grid.Content.BlockMigrators;
 using uSync.Migrations.Migrators.Grid.Extensions;
 using uSync.Migrations.Migrators.Grid.Helpers;
@@ -50,7 +51,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
     public override string Name => nameof(GridContentMigrator);
     public override string[] Editors => [SyncLegacyTypes.Grid];
 
-    public async Task<string?> GetImportValueAsync(string value, IPropertyType propertyType)
+    public override async Task<string?> GetImportValueAsync(string value, IPropertyType propertyType, SyncSerializerOptions options)
     {
         // migrators are responsible for checking if the migration has already taken place. 
         if (value.IsProbiblyAlmostCertainlyBlockGrid())
@@ -72,7 +73,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
             return value;
         }
 
-        var block = await ConvertGridValueToBlockValue(gridDataType, gridValue);
+        var block = await ConvertGridValueToBlockValue(gridDataType, gridValue, options);
         if (block is null)
         {
             _logger.LogWarning("MIGRATION WARNING: Could not convert Grid value to Block value for property {PropertyAlias}, skipping migration for this value.", propertyType.Alias);
@@ -90,7 +91,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
         return node?.SerializeJsonString(true) ?? value;
     }
 
-    private async Task<BlockValue?> ConvertGridValueToBlockValue(IDataType dataType, GridValue grid)
+    private async Task<BlockValue?> ConvertGridValueToBlockValue(IDataType dataType, GridValue grid, SyncSerializerOptions options)
     {
         var gridAlias = dataType.Name;
         var templateAlias = grid.Name;
@@ -132,7 +133,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
                     continue;
                 }
 
-                var rowResult = await ConvertGridRow(gridAlias, row, row.Name);
+                var rowResult = await ConvertGridRow(gridAlias, row, row.Name, options);
                 if (rowResult is null)
                 {
                     _logger.LogInformation("MIGRATION INFO: Row with name {RowName} in Grid with alias {GridAlias} and template {TemplateAlias} has no content, skipping this row in the migration.", row.Name, gridAlias, templateAlias);
@@ -162,7 +163,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
         return block;
     }
 
-    private async Task<BlockRowResult?> ConvertGridRow(string gridAlias, GridValue.GridRow row, string rowName)
+    private async Task<BlockRowResult?> ConvertGridRow(string gridAlias, GridValue.GridRow row, string rowName, SyncSerializerOptions options)
     {
         var result = new BlockRowResult();
 
@@ -171,7 +172,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
 
         foreach (var (area, areaIndex) in row.Areas.Select((x, i) => (x, i)))
         {
-            var areaResult = await ConvertGridArea(gridAlias, rowName, areaIndex, area);
+            var areaResult = await ConvertGridArea(gridAlias, rowName, areaIndex, area, options);
             if (areaResult is null)
             {
                 _logger.LogWarning("MIGRATION WARNING: Found an area without content in row {RowName} in Grid with alias {GridAlias}, skipping this area in the migration.", rowName, gridAlias);
@@ -194,7 +195,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
 
         result.ContentBlocks.Add(rowContentBlock);
 
-        var rowSettingsBlock = await GetSettingsBlockFromGridBlock(row, gridAlias, rowName);
+        var rowSettingsBlock = await GetSettingsBlockFromGridBlock(row, gridAlias, rowName, options);
         if (rowSettingsBlock is not null)
             result.SettingsBlocks.Add(rowSettingsBlock);
 
@@ -208,14 +209,14 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
         return result;
     }
 
-    private async Task<BlockAreaResult?> ConvertGridArea(string gridAlias, string rowName, int areaIndex, GridValue.GridArea area)
+    private async Task<BlockAreaResult?> ConvertGridArea(string gridAlias, string rowName, int areaIndex, GridValue.GridArea area, SyncSerializerOptions options)
     {
         var result = new BlockAreaResult();
         var areaLayoutBlocks = new List<BlockGridLayoutItem>();
 
         foreach (var control in area.Controls)
         {
-            var contentBlock = await GetBlockItemDataFromControl(control);
+            var contentBlock = await GetBlockItemDataFromControl(control, options);
             if (contentBlock.Count == 0)
             {
                 _logger.LogWarning("MIGRATION WARNING: Found a control without content in area {AreaIndex} in row {RowName} in Grid with alias {GridAlias}, skipping this control in the migration.", areaIndex, rowName, gridAlias);
@@ -226,7 +227,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
 
             result.ContentBlocks.AddRange(contentBlock);
 
-            var settingsBlock = await GetSettingsBlockFromGridBlock(control, gridAlias, rowName);
+            var settingsBlock = await GetSettingsBlockFromGridBlock(control, gridAlias, rowName, options);
             if (settingsBlock is not null)
                 result.SettingsBlocks.Add(settingsBlock);
 
@@ -245,7 +246,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
         return result;
     }
 
-    private async Task<List<BlockItemData>> GetBlockItemDataFromControl(GridValue.GridControl control)
+    private async Task<List<BlockItemData>> GetBlockItemDataFromControl(GridValue.GridControl control, SyncSerializerOptions options)
     {
         if (control.Value is null) return [];
 
@@ -264,7 +265,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
         {
             foreach (var (propertyAlias, value) in migrator.GetPropertyValues(control))
             {
-                var blockValue = await GetBlockPropertyValue(contentType, propertyAlias, value);
+                var blockValue = await GetBlockPropertyValue(contentType, propertyAlias, value, options);
                 if (blockValue is null) continue;
                 data.Values.Add(blockValue);
             }
@@ -286,7 +287,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
     }
 
 
-    private async Task<BlockItemData?> GetSettingsBlockFromGridBlock(GridValue.GridBlock gridBlock, string gridAlias, string? layoutAlias)
+    private async Task<BlockItemData?> GetSettingsBlockFromGridBlock(GridValue.GridBlock gridBlock, string gridAlias, string? layoutAlias, SyncSerializerOptions options)
     {
         if (gridBlock.HasConfigOrStyles() is false) return null;
 
@@ -299,7 +300,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
         {
             foreach (var property in gridBlock.Config)
             {
-                var value = await GetBlockPropertyValue(contentType, property.Key, property.Value?.ToString());
+                var value = await GetBlockPropertyValue(contentType, property.Key, property.Value?.ToString(), options);
                 if (value is null) continue;
                 settingsBlock.Values.Add(value);
             }
@@ -309,7 +310,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
         {
             foreach (var style in gridBlock.Styles)
             {
-                var value = await GetBlockPropertyValue(contentType, style.Key, style.Value?.ToString());
+                var value = await GetBlockPropertyValue(contentType, style.Key, style.Value?.ToString(), options);
                 if (value is null) continue;
                 settingsBlock.Values.Add(value);
             }
@@ -318,7 +319,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
         return settingsBlock;
     }
 
-    private async Task<BlockPropertyValue?> GetBlockPropertyValue(IContentType contentType, string propertyAlias, object? propertyValue)
+    private async Task<BlockPropertyValue?> GetBlockPropertyValue(IContentType contentType, string propertyAlias, object? propertyValue, SyncSerializerOptions options)
     {
         if (propertyValue is null) return null;
         var propertyStringValue = propertyValue.ToString();
@@ -334,7 +335,7 @@ internal class GridContentMigrator : SyncValueMapperBase, ISyncMapper, ISyncProp
         foreach (var valueMapper in valueMappers)
         {
             if (mappedValue is null) continue;
-            mappedValue = await valueMapper.GetImportValueAsync(mappedValue, propertyType.PropertyEditorAlias);
+            mappedValue = await valueMapper.GetImportValueAsync(mappedValue, propertyType.PropertyEditorAlias, options);
         }
 
         return GridMigratorHelpers.CreateBlockPropertyValue(safePropertyAlias, mappedValue ?? propertyStringValue);

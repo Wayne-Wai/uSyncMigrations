@@ -5,6 +5,7 @@ using Umbraco.Cms.Core.Services;
 
 using uSync.Core.Extensions;
 using uSync.Core.Mapping;
+using uSync.Core.Serialization;
 
 using static uSync.Migrations.Core.SyncMigrations;
 
@@ -30,7 +31,7 @@ internal class NestedContentContentMigrator : SyncValueMapperBase, ISyncMapper
 
     private static string[] _reservedProperties = ["ncContentTypeAlias", "key", "name"];
 
-    public override Task<string?> GetImportValueAsync(string value, string editorAlias)
+    public override Task<string?> GetImportValueAsync(string value, string editorAlias, SyncSerializerOptions options)
     {
         // migrators are resposible for checking if the migration has already happend
         if (value.Contains("ncContentTypeAlias") is false)
@@ -96,7 +97,7 @@ internal class NestedContentContentMigrator : SyncValueMapperBase, ISyncMapper
         return Task.FromResult<string?>(blockListValue.SerializeJsonString() ?? value);
     }
 
-    private bool TryGetNestedContent(string value, out List<Dictionary<string, object>>? nestedContent)
+    private static bool TryGetNestedContent(string value, out List<Dictionary<string, object>>? nestedContent)
     {
         nestedContent = null;
         if (value.Contains("ncContentTypeAlias") is false)

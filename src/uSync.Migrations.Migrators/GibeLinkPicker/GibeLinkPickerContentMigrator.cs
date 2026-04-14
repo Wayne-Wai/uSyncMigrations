@@ -4,6 +4,7 @@ using Umbraco.Cms.Core.Services;
 
 using uSync.Core.Extensions;
 using uSync.Core.Mapping;
+using uSync.Core.Serialization;
 using uSync.Migrations.Migrators.GibeLinkPicker.Models;
 
 namespace uSync.Migrations.Migrators.GibeLinkPicker;
@@ -18,7 +19,7 @@ internal class GibeLinkPickerContentMigrator : SyncValueMapperBase, ISyncMapper
 
     public override string[] Editors => ["Gibe.LinkPicker"];
 
-    public override Task<string?> GetImportValueAsync(string value, string editorAlias)
+    public override Task<string?> GetImportValueAsync(string value, string editorAlias, SyncSerializerOptions options)
     {
         // TODO: Migrators are responsible to checking if the migration has already happened.
         if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<string?>(value);
