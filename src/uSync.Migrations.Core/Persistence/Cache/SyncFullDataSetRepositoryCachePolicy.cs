@@ -69,7 +69,7 @@ internal class SyncFullDataSetRepositoryCachePolicy<TModel, TKey>
         }
         finally
         {
-            ClearAllAsync();
+            await ClearAllAsync();
             await RegisterCacheChangeAsync();
         }
     }
@@ -83,7 +83,7 @@ internal class SyncFullDataSetRepositoryCachePolicy<TModel, TKey>
         }
         finally
         {
-            ClearAllAsync();
+            await ClearAllAsync();    
             await RegisterCacheChangeAsync();
         }
     }
@@ -96,7 +96,7 @@ internal class SyncFullDataSetRepositoryCachePolicy<TModel, TKey>
         }
         finally
         {
-            ClearAllAsync();
+            await ClearAllAsync();
             await RegisterCacheChangeAsync();
         }
     }
@@ -110,7 +110,7 @@ internal class SyncFullDataSetRepositoryCachePolicy<TModel, TKey>
         }
         finally
         {
-            ClearAllAsync();
+            await ClearAllAsync();
             await RegisterCacheChangeAsync();
         }
 
