@@ -2,7 +2,7 @@
 
 > [!NOTE]
 > This is very much a work in progress. We are trying out some ideas to make migrations simpler in the v17 world.
-> Feel free to nose about, but at the moment, there is ZERO support for any of this, and it will probably break your site.
+> Feel free to nose about, but at the moment, there is ZERO support for any of this - you should use this only on local development sites, where you have backups of your data and don't mind starting again.
 
 ## Brave New Migrations
 
